@@ -1,0 +1,769 @@
+{% load static %}
+<style>
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0.8);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes glow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), 0 0 40px rgba(251, 191, 36, 0.3);
+        }
+
+        50% {
+            box-shadow: 0 0 40px rgba(220, 38, 38, 0.8), 0 0 80px rgba(251, 191, 36, 0.5);
+        }
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .leaderboard-scene {
+        background: radial-gradient(circle at top, #ffffff 0%, #fff9e6 50%, #ffe6e6 100%);
+        min-height: 100vh;
+        padding: 3rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bg-circles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .bg-circle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.1;
+    }
+
+    .bg-circle:nth-child(1) {
+        width: 600px;
+        height: 600px;
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        top: -200px;
+        left: -200px;
+        animation: float 8s ease-in-out infinite;
+    }
+        .leaderboard-scene {
+            min-height: auto;
+            padding: 8rem 0rem;
+            position: relative;
+            overflow: hidden;
+        }
+    .bg-circle:nth-child(2) {
+        width: 400px;
+        height: 400px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        bottom: -100px;
+        right: -100px;
+        animation: float 6s ease-in-out infinite reverse;
+    }
+
+    .bg-circle:nth-child(3) {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, #dc2626, #fbbf24);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: rotate 20s linear infinite;
+    }
+
+    .hero-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .trophy-circle {
+        width: 140px;
+        height: 140px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 4rem;
+        animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+        position: relative;
+        box-shadow: 0 20px 60px rgba(251, 191, 36, 0.4);
+    }
+
+    .trophy-circle::before,
+    .trophy-circle::after {
+        content: '';
+        position: absolute;
+        inset: -15px;
+        border-radius: 50%;
+        border: 3px solid #dc2626;
+        opacity: 0.3;
+    }
+
+    .trophy-circle::after {
+        inset: -30px;
+        border-color: #fbbf24;
+        animation: ripple 2s ease-out infinite;
+    }
+
+    .main-title {
+        font-size: 4rem;
+        font-weight: 900;
+        color: #dc2626;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 0.5rem;
+        text-shadow: 3px 3px 0 #fbbf24, 6px 6px 20px rgba(220, 38, 38, 0.3);
+    }
+
+    .sub-title {
+        font-size: 1.3rem;
+        color: #991b1b;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    .champions-orbit {
+        max-width: 1400px;
+        margin: 0 auto 5rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 3rem;
+        position: relative;
+        z-index: 1;
+        padding: 0 2rem;
+    }
+
+    .champion {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: slideIn 0.8s ease-out;
+    }
+
+    .champion.first {
+        order: 2;
+        animation-delay: 0.2s;
+    }
+
+    .champion.second {
+        order: 1;
+        animation-delay: 0s;
+    }
+
+    .champion.third {
+        order: 3;
+        animation-delay: 0.4s;
+    }
+
+    .orbit-ring {
+        position: relative;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .champion.first .orbit-ring {
+        animation-delay: 0s;
+    }
+
+    .champion.second .orbit-ring {
+        animation-delay: 0.5s;
+    }
+
+    .champion.third .orbit-ring {
+        animation-delay: 1s;
+    }
+
+    .outer-ring {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        border: 4px dashed transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .champion.first .outer-ring {
+        width: 260px;
+        height: 260px;
+        border-color: #fbbf24;
+    }
+
+    .champion.second .outer-ring {
+        border-color: #d1d5db;
+    }
+
+    .champion.third .outer-ring {
+        border-color: #f59e0b;
+    }
+
+    .middle-ring {
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        background: white;
+        border: 5px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .champion.first .middle-ring {
+        width: 220px;
+        height: 220px;
+        border-color: #fbbf24;
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    }
+
+    .champion.second .middle-ring {
+        border-color: #d1d5db;
+        background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+    }
+
+    .champion.third .middle-ring {
+        border-color: #f59e0b;
+        background: linear-gradient(135deg, #fffbeb, #fed7aa);
+    }
+
+    .avatar-circle {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid white;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .champion.first .avatar-circle {
+        width: 180px;
+        height: 180px;
+        border-width: 5px;
+    }
+
+    .avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .crown-circle {
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
+        border: 4px solid white;
+        animation: float 2s ease-in-out infinite;
+    }
+
+    .rank-circle {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.8rem;
+        color: white;
+        border: 4px solid white;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .champion.first .rank-circle {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    .champion.second .rank-circle {
+        background: linear-gradient(135deg, #d1d5db, #9ca3af);
+    }
+
+    .champion.third .rank-circle {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .champion-info {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .champion-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+
+    .champion.first .champion-name {
+        font-size: 1.7rem;
+        color: #dc2626;
+    }
+
+    .champion-username {
+        color: #6b7280;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .points-circle {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        border: 4px solid #fbbf24;
+        box-shadow: 0 5px 20px rgba(220, 38, 38, 0.4);
+        position: relative;
+    }
+
+    .champion.first .points-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .points-circle::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 2px solid #fbbf24;
+        opacity: 0.5;
+    }
+
+    .points-label {
+        font-size: 0.7rem;
+        color: #fbbf24;
+        font-weight: 600;
+    }
+
+    .points-value {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: white;
+    }
+
+    .rankings-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .rank-circles-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .rank-item-circle {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 100px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        animation: slideIn 0.6s ease-out;
+        border: 3px solid transparent;
+    }
+
+    .rank-item-circle:hover {
+        transform: translateX(10px) scale(1.02);
+        box-shadow: 0 10px 40px rgba(220, 38, 38, 0.2);
+        border-color: #fbbf24;
+    }
+
+    .rank-item-circle:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .rank-item-circle:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .rank-item-circle:nth-child(3) {
+        animation-delay: 0.2s;
+    }
+
+    .rank-item-circle:nth-child(4) {
+        animation-delay: 0.3s;
+    }
+
+    .rank-badge-circle {
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.3rem;
+        color: #fbbf24;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        border: 3px solid white;
+    }
+
+    .rank-avatar-circle {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #fbbf24;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .rank-avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .rank-user-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .rank-user-name {
+        font-weight: 700;
+        color: #1f2937;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rank-user-username {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .rank-points-circle {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+        border: 3px solid white;
+    }
+
+    .rank-points-value {
+        font-weight: 900;
+        font-size: 1rem;
+        color: #991b1b;
+    }
+
+    .rank-points-label {
+        font-size: 0.65rem;
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    .empty-state-circle {
+        text-align: center;
+        padding: 5rem 2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .empty-icon-circle {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, #fef3c7, #fef08a);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        font-size: 5rem;
+        animation: float 3s ease-in-out infinite;
+        border: 8px solid white;
+        box-shadow: 0 20px 60px rgba(251, 191, 36, 0.3);
+        position: relative;
+    }
+
+    .empty-icon-circle::before {
+        content: '';
+        position: absolute;
+        inset: -20px;
+        border-radius: 50%;
+        border: 4px dashed #fbbf24;
+        animation: rotate 10s linear infinite;
+    }
+
+    .empty-state-circle h2 {
+        color: #dc2626;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    .empty-state-circle p {
+        color: #991b1b;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        line-height: 1.8;
+    }
+
+    .join-circle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        color: white;
+        padding: 1.25rem 3rem;
+        border-radius: 50px;
+        border: 4px solid #fbbf24;
+        font-weight: 700;
+        font-size: 1.2rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
+    }
+
+    .join-circle-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 15px 50px rgba(220, 38, 38, 0.6);
+        color: white;
+        animation: glow 1s ease-in-out infinite;
+    }
+
+    @media (max-width: 992px) {
+        .champions-orbit {
+            flex-direction: column;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .champion.first,
+        .champion.second,
+        .champion.third {
+            order: initial;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-title {
+            font-size: 2rem;
+        }
+
+        .rank-circles-container {
+            grid-template-columns: 1fr;
+        }
+
+        .outer-ring,
+        .champion.first .outer-ring {
+            width: 200px;
+            height: 200px;
+        }
+
+        .middle-ring,
+        .champion.first .middle-ring {
+            width: 170px;
+            height: 170px;
+        }
+
+        .avatar-circle,
+        .champion.first .avatar-circle {
+            width: 140px;
+            height: 140px;
+        }
+    }
+</style>
+
+<div class="leaderboard-scene">
+    <div class="bg-circles">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+    </div>
+
+    <div class="hero-header">
+        <div class="trophy-circle">🏆</div>
+       <h1 class="main-title">Our Zorpido Stars</h1>
+      <p class="sub-title">Top 20 Most Loyal Visitors</p>
+    </div>
+
+    {% if leaderboard_users and leaderboard_users|length > 0 %}
+
+    <!-- Top 3 Champions -->
+    {% if leaderboard_users|length >= 3 %}
+    <div class="champions-orbit">
+        {% for user in leaderboard_users|slice:":3" %}
+        <div
+            class="champion {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% else %}third{% endif %}">
+            <div class="orbit-ring">
+                <div class="outer-ring">
+                    <div class="middle-ring">
+                        {% if forloop.counter == 1 %}
+                        <div class="crown-circle">👑</div>
+                        {% endif %}
+
+                        <div class="avatar-circle">
+                            {% if user.profile_picture and user.profile_picture.url %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name|default:user.username }}">
+                            {% else %}
+                            <img src="{% static 'images/default_profile.png' %}" alt="default avatar">
+                            {% endif %}
+                        </div>
+
+                        <div class="rank-circle">{{ forloop.counter }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="champion-info">
+                <div class="champion-name">{{ user.full_name|default:user.username }}</div>
+                <div class="champion-username">@{{ user.username }}</div>
+                <div class="points-circle">
+                    <span class="points-label">POINTS</span>
+                    <span class="points-value">{{ user.loyalty_points }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Remaining Rankings -->
+    {% if leaderboard_users|length > 3 %}
+    <div class="rankings-grid">
+        <div class="rank-circles-container">
+            {% for user in leaderboard_users|slice:"3:" %}
+            <div class="rank-item-circle">
+                <div class="rank-badge-circle">{{ forloop.counter|add:3 }}</div>
+
+                <div class="rank-avatar-circle">
+                    {% if user.profile_picture and user.profile_picture.url %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name|default:user.username }}">
+                    {% else %}
+                    <img src="{% static 'images/default_profile.png' %}" alt="default avatar">
+                    {% endif %}
+                </div>
+
+                <div class="rank-user-info">
+                    <div class="rank-user-name">{{ user.full_name|default:user.username }}</div>
+                    <div class="rank-user-username">@{{ user.username }}</div>
+                </div>
+
+                <div class="rank-points-circle">
+                    <span class="rank-points-value">{{ user.loyalty_points }}</span>
+                    <span class="rank-points-label">PTS</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="rankings-grid">
+        <div class="empty-state-circle">
+            <div class="empty-icon-circle">🏆</div>
+            <h2>Be First</h2>
+            <p>The championship throne awaits! Join our loyalty program and become the first legend in our hall of
+                champions.</p>
+            <a href="{% url 'users:register' %}" class="join-circle-btn">🚀 CLAIM YOUR SPOT</a>
+        </div>
+    </div>
+    {% endif %}
+</div>

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * INVENTORY MANAGEMENT JAVASCRIPT - FIXED VERSION
  * ================================================
@@ -47,18 +46,6 @@ function getCookie(name) {
       // Check if this cookie is the one we're looking for
       if (cookie.substring(0, name.length + 1) === (name + '=')) {
         // Extract and decode the cookie value
-=======
-let currentItemId = null;
-const stockModal = new bootstrap.Modal(document.getElementById('stockModal'));
-
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
->>>>>>> df6fb379555319efdf513182b2e65dbdd28a0164
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
       }

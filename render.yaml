@@ -1,0 +1,25 @@
+# Minimal render.yaml example to deploy a Web Service on Render
+# Update names, region, and plans to match your account and needs.
+services:
+  - type: web
+    name: zorpido-web
+    env: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn zorpido_config.wsgi --log-file -
+    autoDeploy: true
+    envVars:
+      - key: SECRET_KEY
+        fromValue: "REPLACE_WITH_SECRET_OR_SET_IN_RENDER"
+      - key: DEBUG
+        fromValue: "False"
+      - key: DATABASE_URL
+        fromValue: "REPLACE_WITH_RENDER_POSTGRES_URL"
+
+# Optional: declarative Postgres service (you can also add Postgres from the Render dashboard)
+databases:
+  - name: zorpido-db
+    plan: starter
+    engine: postgres
