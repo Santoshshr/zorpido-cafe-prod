@@ -35,3 +35,30 @@
 6) Notes
    - Ensure `requirements.txt` contains `psycopg2-binary` and `dj-database-url` (already provided).
    - Keep local `.env` files out of source control; use Render env vars for production secrets.
+
+   7) Migrating data from local SQLite to PostgreSQL
+
+       - The repository includes a helper script `scripts/migrate_sqlite_to_postgres.sh`.
+       - Steps (local machine):
+
+             ```bash
+             # 1) Create a Postgres DB (e.g. on Render) and get the DATABASE_URL
+             export DATABASE_URL="postgres://user:pass@host:5432/dbname"
+
+             # 2) (optional) activate your virtualenv and install deps
+             pip install -r requirements.txt
+
+             # 3) Run the migration script from the repo root
+             ./scripts/migrate_sqlite_to_postgres.sh
+             ```
+
+       - What the script does:
+          - Dumps Django data from the current DB into `/tmp/zorpido_data.json` (excludes contenttypes, permissions, sessions).
+          - Installs dependencies, runs `migrate` against the Postgres DB specified in `DATABASE_URL`, then runs `loaddata` to import the data.
+
+       - Important notes:
+          - Large or complex apps (custom fields, third-party apps storing binary blobs) may require manual adjustments to the fixture.
+          - Admin users, passwords, and permissions will be preserved if included in the dump.
+          - Always back up the source `db.sqlite3` before starting.
+          - After a successful migration, remove `/tmp/zorpido_data.json` or store it securely.
+
