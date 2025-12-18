@@ -8,15 +8,13 @@ services:
     region: oregon
     branch: main
     buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: gunicorn zorpido_config.wsgi --log-file -
+    # Run migrations on deploy; Render supports a releaseCommand which runs before the service starts
+    releaseCommand: python manage.py migrate --noinput
     autoDeploy: true
-    envVars:
-      - key: SECRET_KEY
-        fromValue: "REPLACE_WITH_SECRET_OR_SET_IN_RENDER"
-      - key: DEBUG
-        fromValue: "False"
-      - key: DATABASE_URL
-        fromValue: "REPLACE_WITH_RENDER_POSTGRES_URL"
+    # Environment variables (SECRET_KEY, DEBUG, DATABASE_URL, etc.) should be configured
+    # securely from the Render dashboard or via the Render UI. Do NOT store secrets in the repo.
 
 # Optional: declarative Postgres service (you can also add Postgres from the Render dashboard)
 databases:
