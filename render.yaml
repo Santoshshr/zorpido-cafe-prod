@@ -8,7 +8,8 @@ services:
     region: oregon
     branch: main
     buildCommand: pip install -r requirements.txt
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    # Upgrade packaging tools first for best compatibility with newer Python versions
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: gunicorn zorpido_config.wsgi --log-file -
     # Run migrations on deploy; Render supports a releaseCommand which runs before the service starts
     releaseCommand: python manage.py migrate --noinput

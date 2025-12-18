@@ -11,7 +11,11 @@ django-widget-tweaks==1.5.0
 gunicorn==21.2.0
 packaging==25.0
 pillow==10.2.0
-psycopg2-binary==2.9.9
+# Use psycopg (psycopg3) with the binary wheel which is compatible with Python 3.12
+psycopg[binary]>=3.0.0
+# Ensure build tools are up-to-date; these can also be upgraded in the build step
+setuptools>=65.0.0
+wheel>=0.40.0
 python-dateutil==2.8.2
 python-decouple==3.8
 qrcode==7.4.2
