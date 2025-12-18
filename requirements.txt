@@ -1,19 +1,14 @@
 asgiref==3.10.0
 colorama==0.4.6
 dj-database-url==1.1.0
-# Use Django 4.2.x (LTS) for stability and third-party compatibility
 Django>=4.2,<4.3
 django-cors-headers==4.3.1
 django-debug-toolbar==4.3.0
 django-widget-tweaks==1.5.0
-# Removed packages that require system-level libraries (freetype-py, pycairo, rlPyCairo, pypng)
-# If you need these, install the appropriate system packages on the build image.
 gunicorn==21.2.0
 packaging==25.0
 pillow==10.2.0
-# Use psycopg (psycopg3) with the binary wheel which is compatible with Python 3.12
 psycopg[binary]>=3.0.0
-# Ensure build tools are up-to-date; these can also be upgraded in the build step
 setuptools>=65.0.0
 wheel>=0.40.0
 python-dateutil==2.8.2
