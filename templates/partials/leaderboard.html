@@ -1,769 +1,2169 @@
 {% load static %}
 <style>
-    @keyframes float {
-
-        0%,
-        100% {
-            transform: translateY(0px);
-        }
-
-        50% {
-            transform: translateY(-20px);
-        }
-    }
-
-    @keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    @keyframes pulse {
-
-        0%,
-        100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.05);
-        }
-    }
-
-    @keyframes ripple {
-        0% {
-            transform: scale(0.8);
-            opacity: 1;
-        }
-
-        100% {
-            transform: scale(2);
-            opacity: 0;
-        }
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    @keyframes glow {
-
-        0%,
-        100% {
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), 0 0 40px rgba(251, 191, 36, 0.3);
-        }
-
-        50% {
-            box-shadow: 0 0 40px rgba(220, 38, 38, 0.8), 0 0 80px rgba(251, 191, 36, 0.5);
-        }
-    }
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    .leaderboard-scene {
-        background: radial-gradient(circle at top, #ffffff 0%, #fff9e6 50%, #ffe6e6 100%);
-        min-height: 100vh;
-        padding: 3rem 1rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .bg-circles {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        pointer-events: none;
-    }
-
-    .bg-circle {
-        position: absolute;
-        border-radius: 50%;
-        opacity: 0.1;
-    }
-
-    .bg-circle:nth-child(1) {
-        width: 600px;
-        height: 600px;
-        background: linear-gradient(135deg, #dc2626, #ef4444);
-        top: -200px;
-        left: -200px;
-        animation: float 8s ease-in-out infinite;
-    }
-        .leaderboard-scene {
-            min-height: auto;
-            padding: 8rem 0rem;
-            position: relative;
-            overflow: hidden;
-        }
-    .bg-circle:nth-child(2) {
-        width: 400px;
-        height: 400px;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        bottom: -100px;
-        right: -100px;
-        animation: float 6s ease-in-out infinite reverse;
-    }
-
-    .bg-circle:nth-child(3) {
-        width: 300px;
-        height: 300px;
-        background: linear-gradient(135deg, #dc2626, #fbbf24);
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        animation: rotate 20s linear infinite;
-    }
-
-    .hero-header {
-        text-align: center;
-        margin-bottom: 4rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .trophy-circle {
-        width: 140px;
-        height: 140px;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.5rem;
-        font-size: 4rem;
-        animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
-        position: relative;
-        box-shadow: 0 20px 60px rgba(251, 191, 36, 0.4);
-    }
-
-    .trophy-circle::before,
-    .trophy-circle::after {
-        content: '';
-        position: absolute;
-        inset: -15px;
-        border-radius: 50%;
-        border: 3px solid #dc2626;
-        opacity: 0.3;
-    }
-
-    .trophy-circle::after {
-        inset: -30px;
-        border-color: #fbbf24;
-        animation: ripple 2s ease-out infinite;
-    }
-
-    .main-title {
-        font-size: 4rem;
-        font-weight: 900;
-        color: #dc2626;
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        margin-bottom: 0.5rem;
-        text-shadow: 3px 3px 0 #fbbf24, 6px 6px 20px rgba(220, 38, 38, 0.3);
-    }
-
-    .sub-title {
-        font-size: 1.3rem;
-        color: #991b1b;
-        font-weight: 600;
-        letter-spacing: 1px;
-    }
-    .champions-orbit {
-        max-width: 1400px;
-        margin: 0 auto 5rem;
-        display: flex;
-        justify-content: center;
-        align-items: flex-end;
-        gap: 3rem;
-        position: relative;
-        z-index: 1;
-        padding: 0 2rem;
-    }
-
-    .champion {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        animation: slideIn 0.8s ease-out;
-    }
-
-    .champion.first {
-        order: 2;
-        animation-delay: 0.2s;
-    }
-
-    .champion.second {
-        order: 1;
-        animation-delay: 0s;
-    }
-
-    .champion.third {
-        order: 3;
-        animation-delay: 0.4s;
-    }
-
-    .orbit-ring {
-        position: relative;
-        animation: float 3s ease-in-out infinite;
-    }
-
-    .champion.first .orbit-ring {
-        animation-delay: 0s;
-    }
-
-    .champion.second .orbit-ring {
-        animation-delay: 0.5s;
-    }
-
-    .champion.third .orbit-ring {
-        animation-delay: 1s;
-    }
-
-    .outer-ring {
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
-        border: 4px dashed transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-
-    .champion.first .outer-ring {
-        width: 260px;
-        height: 260px;
-        border-color: #fbbf24;
-    }
-
-    .champion.second .outer-ring {
-        border-color: #d1d5db;
-    }
-
-    .champion.third .outer-ring {
-        border-color: #f59e0b;
-    }
-
-    .middle-ring {
-        width: 190px;
-        height: 190px;
-        border-radius: 50%;
-        background: white;
-        border: 5px solid transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    .champion.first .middle-ring {
-        width: 220px;
-        height: 220px;
-        border-color: #fbbf24;
-        background: linear-gradient(135deg, #fffbeb, #fef3c7);
-    }
-
-    .champion.second .middle-ring {
-        border-color: #d1d5db;
-        background: linear-gradient(135deg, #f9fafb, #f3f4f6);
-    }
-
-    .champion.third .middle-ring {
-        border-color: #f59e0b;
-        background: linear-gradient(135deg, #fffbeb, #fed7aa);
-    }
-
-    .avatar-circle {
-        width: 160px;
-        height: 160px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 4px solid white;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .champion.first .avatar-circle {
-        width: 180px;
-        height: 180px;
-        border-width: 5px;
-    }
-
-    .avatar-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .crown-circle {
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
-        border: 4px solid white;
-        animation: float 2s ease-in-out infinite;
-    }
-
-    .rank-circle {
-        position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 900;
-        font-size: 1.8rem;
-        color: white;
-        border: 4px solid white;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .champion.first .rank-circle {
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    }
-
-    .champion.second .rank-circle {
-        background: linear-gradient(135deg, #d1d5db, #9ca3af);
-    }
-
-    .champion.third .rank-circle {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-
-    .champion-info {
-        text-align: center;
-        margin-top: 3rem;
-    }
-
-    .champion-name {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 0.25rem;
-    }
-
-    .champion.first .champion-name {
-        font-size: 1.7rem;
-        color: #dc2626;
-    }
-
-    .champion-username {
-        color: #6b7280;
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .points-circle {
-        width: 90px;
-        height: 90px;
-        background: linear-gradient(135deg, #dc2626, #991b1b);
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        border: 4px solid #fbbf24;
-        box-shadow: 0 5px 20px rgba(220, 38, 38, 0.4);
-        position: relative;
-    }
-
-    .champion.first .points-circle {
-        width: 100px;
-        height: 100px;
-    }
-
-    .points-circle::before {
-        content: '';
-        position: absolute;
-        inset: -8px;
-        border-radius: 50%;
-        border: 2px solid #fbbf24;
-        opacity: 0.5;
-    }
-
-    .points-label {
-        font-size: 0.7rem;
-        color: #fbbf24;
-        font-weight: 600;
-    }
-
-    .points-value {
-        font-size: 1.3rem;
-        font-weight: 900;
-        color: white;
-    }
-
-    .rankings-grid {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .rank-circles-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-    }
-
-    .rank-item-circle {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        background: white;
-        padding: 1.5rem;
-        border-radius: 100px;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        animation: slideIn 0.6s ease-out;
-        border: 3px solid transparent;
-    }
-
-    .rank-item-circle:hover {
-        transform: translateX(10px) scale(1.02);
-        box-shadow: 0 10px 40px rgba(220, 38, 38, 0.2);
-        border-color: #fbbf24;
-    }
-
-    .rank-item-circle:nth-child(1) {
-        animation-delay: 0s;
-    }
-
-    .rank-item-circle:nth-child(2) {
-        animation-delay: 0.1s;
-    }
-
-    .rank-item-circle:nth-child(3) {
-        animation-delay: 0.2s;
-    }
-
-    .rank-item-circle:nth-child(4) {
-        animation-delay: 0.3s;
-    }
-
-    .rank-badge-circle {
-        width: 55px;
-        height: 55px;
-        background: linear-gradient(135deg, #dc2626, #991b1b);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 900;
-        font-size: 1.3rem;
-        color: #fbbf24;
-        flex-shrink: 0;
-        box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-        border: 3px solid white;
-    }
-
-    .rank-avatar-circle {
-        width: 65px;
-        height: 65px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 3px solid #fbbf24;
-        flex-shrink: 0;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .rank-avatar-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .rank-user-info {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .rank-user-name {
-        font-weight: 700;
-        color: #1f2937;
-        font-size: 1.1rem;
-        margin-bottom: 0.25rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .rank-user-username {
-        color: #6b7280;
-        font-size: 0.9rem;
-    }
-
-    .rank-points-circle {
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
-        border: 3px solid white;
-    }
-
-    .rank-points-value {
-        font-weight: 900;
-        font-size: 1rem;
-        color: #991b1b;
-    }
-
-    .rank-points-label {
-        font-size: 0.65rem;
-        color: #dc2626;
-        font-weight: 600;
-    }
-
-    .empty-state-circle {
-        text-align: center;
-        padding: 5rem 2rem;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .empty-icon-circle {
-        width: 200px;
-        height: 200px;
-        background: linear-gradient(135deg, #fef3c7, #fef08a);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem;
-        font-size: 5rem;
-        animation: float 3s ease-in-out infinite;
-        border: 8px solid white;
-        box-shadow: 0 20px 60px rgba(251, 191, 36, 0.3);
-        position: relative;
-    }
-
-    .empty-icon-circle::before {
-        content: '';
-        position: absolute;
-        inset: -20px;
-        border-radius: 50%;
-        border: 4px dashed #fbbf24;
-        animation: rotate 10s linear infinite;
-    }
-
-    .empty-state-circle h2 {
-        color: #dc2626;
-        font-size: 2.5rem;
-        font-weight: 900;
-        margin-bottom: 1rem;
-        text-transform: uppercase;
-    }
-
-    .empty-state-circle p {
-        color: #991b1b;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-        line-height: 1.8;
-    }
-
-    .join-circle-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #dc2626, #991b1b);
-        color: white;
-        padding: 1.25rem 3rem;
-        border-radius: 50px;
-        border: 4px solid #fbbf24;
-        font-weight: 700;
-        font-size: 1.2rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
-    }
-
-    .join-circle-btn:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 15px 50px rgba(220, 38, 38, 0.6);
-        color: white;
-        animation: glow 1s ease-in-out infinite;
-    }
-
-    @media (max-width: 992px) {
-        .champions-orbit {
-            flex-direction: column;
-            align-items: center;
-            gap: 4rem;
-        }
-
-        .champion.first,
-        .champion.second,
-        .champion.third {
-            order: initial;
-        }
-
-        .main-title {
-            font-size: 2.5rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .main-title {
-            font-size: 2rem;
-        }
-
-        .rank-circles-container {
-            grid-template-columns: 1fr;
-        }
-
-        .outer-ring,
-        .champion.first .outer-ring {
-            width: 200px;
-            height: 200px;
-        }
-
-        .middle-ring,
-        .champion.first .middle-ring {
-            width: 170px;
-            height: 170px;
-        }
-
-        .avatar-circle,
-        .champion.first .avatar-circle {
-            width: 140px;
-            height: 140px;
-        }
-    }
+/* ===============================================
+   LEADERBOARD SECTION - ZORPIDO CAFÉ
+   Fully Responsive & Device-Friendly Design
+   Brand Colors: Red (#E63946), White (#FFFFFF), Yellow (#FFD700)
+   =============================================== */
+
+/* -----------------
+   Section Container
+   ----------------- */
+.zorpido-leaderboard {
+  position: relative;
+  padding: 60px 15px 80px;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+.zorpido-leaderboard .container {
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 0 15px;
+}
+
+/* -----------------
+   Animated Background
+   ----------------- */
+.leaderboard-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bg-gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  animation: float-orb 20s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #E63946, transparent);
+  top: -150px;
+  left: -100px;
+}
+
+.orb-2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #FFD700, transparent);
+  bottom: -100px;
+  right: -80px;
+}
+
+.orb-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #E63946, transparent);
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes float-orb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -20px) scale(1.05);
+  }
+}
+
+.floating-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: none; /* Hidden on mobile by default */
+}
+
+.shape {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.15;
+  animation: float-shape 15s ease-in-out infinite;
+}
+
+@keyframes float-shape {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+/* -----------------
+   Section Header
+   ----------------- */
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.trophy-badge {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trophy-icon {
+  font-size: 50px;
+  position: relative;
+  z-index: 3;
+  animation: bounce-trophy 2s ease-in-out infinite;
+}
+
+@keyframes bounce-trophy {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+}
+
+.trophy-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #FFD700, transparent);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: pulse-glow 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.3;
+  }
+}
+
+.trophy-ring {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  border: 2px solid #FFD700;
+  border-radius: 50%;
+  animation: expand-ring 2.5s ease-out infinite;
+  z-index: 2;
+}
+
+.trophy-ring.ring-2 {
+  animation-delay: 1.25s;
+}
+
+@keyframes expand-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.leaderboard-title {
+  margin-bottom: 12px;
+}
+
+.title-main {
+  display: block;
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #E63946, #991b1b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-bottom: 5px;
+}
+
+.title-accent {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #E63946;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.leaderboard-subtitle {
+  font-size: 15px;
+  color: #666;
+  max-width: 100%;
+  margin: 0 auto;
+  line-height: 1.5;
+  padding: 0 10px;
+}
+
+/* -----------------
+   Champions Podium (Top 3) - Mobile First
+   ----------------- */
+.champions-podium {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 500px;
+  margin: 0 auto 50px;
+  padding: 0 10px;
+}
+
+.podium-position {
+  animation: slideInUp 0.6s ease-out backwards;
+  width: 100%;
+}
+
+.position-first {
+  animation-delay: 0.2s;
+  order: 1;
+}
+
+.position-second {
+  animation-delay: 0.3s;
+  order: 2;
+}
+
+.position-third {
+  animation-delay: 0.4s;
+  order: 3;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------
+   Champion Cards - Mobile Optimized
+   ----------------- */
+.champion-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 25px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.champion-card:active {
+  transform: scale(0.98);
+}
+
+.champion-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #E63946, #FFD700);
+}
+
+/* Crown for 1st place */
+.crown-decoration {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.crown-icon {
+  font-size: 35px;
+  display: block;
+  animation: rotate-crown 3s ease-in-out infinite;
+}
+
+@keyframes rotate-crown {
+  0%, 100% {
+    transform: rotate(-8deg) scale(1);
+  }
+  50% {
+    transform: rotate(8deg) scale(1.05);
+  }
+}
+
+.crown-sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #FFD700;
+  border-radius: 50%;
+  animation: sparkle-pulse 1.5s ease-in-out infinite;
+}
+
+.crown-sparkle:nth-child(1) {
+  top: 2px;
+  left: -10px;
+  animation-delay: 0s;
+}
+
+.crown-sparkle:nth-child(2) {
+  top: 5px;
+  right: -10px;
+  animation-delay: 0.5s;
+}
+
+.crown-sparkle:nth-child(3) {
+  bottom: 2px;
+  left: 50%;
+  animation-delay: 1s;
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+/* Medal Badge */
+.medal-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  animation: spin-medal 3s linear infinite;
+  z-index: 5;
+}
+
+@keyframes spin-medal {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+}
+
+.gold-medal {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.silver-medal {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+}
+
+.bronze-medal {
+  background: linear-gradient(135deg, #CD7F32, #B87333);
+}
+
+.medal-icon {
+  font-size: 24px;
+}
+
+/* Avatar Container - Mobile Optimized */
+.avatar-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 20px auto 20px;
+}
+
+.champion-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 3;
+}
+
+.avatar-ring {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  border: 2px dashed;
+  animation: rotate-slow 20s linear infinite;
+  z-index: 1;
+}
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ring-gold {
+  border-color: #FFD700;
+}
+
+.ring-silver {
+  border-color: #C0C0C0;
+}
+
+.ring-bronze {
+  border-color: #CD7F32;
+}
+
+.avatar-glow {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border-radius: 50%;
+  filter: blur(15px);
+  opacity: 0.4;
+  animation: pulse-glow 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+.glow-gold {
+  background: radial-gradient(circle, #FFD700, transparent);
+}
+
+.glow-silver {
+  background: radial-gradient(circle, #C0C0C0, transparent);
+}
+
+.glow-bronze {
+  background: radial-gradient(circle, #CD7F32, transparent);
+}
+
+.rank-badge {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E63946, #991b1b);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+  z-index: 4;
+}
+
+/* Champion Details */
+.champion-details {
+  text-align: center;
+}
+
+.champion-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.position-first .champion-name {
+  font-size: 22px;
+  background: linear-gradient(135deg, #E63946, #991b1b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.champion-username {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 15px;
+  word-break: break-all;
+}
+
+.points-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 10px 20px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.points-icon {
+  font-size: 18px;
+}
+
+.points-number {
+  font-size: 20px;
+  font-weight: 900;
+  color: #991b1b;
+}
+
+.points-text {
+  font-size: 11px;
+  color: #E63946;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* -----------------
+   Rankings Section (4+) - Mobile Optimized
+   ----------------- */
+.rankings-section {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.rankings-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #E63946;
+  text-align: center;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rankings-icon {
+  font-size: 28px;
+  animation: pulse-icon 2s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.rankings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ranking-item {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: fadeInScale 0.5s ease-out backwards;
+  animation-delay: calc(var(--rank) * 0.05s);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ranking-item:active {
+  transform: scale(0.98);
+}
+
+.ranking-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #E63946, #FFD700);
+}
+
+.item-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.rank-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E63946, #991b1b);
+  color: #FFD700;
+  font-size: 16px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.25);
+}
+
+.user-avatar-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.user-avatar-small img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #FFD700;
+}
+
+.avatar-border {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid #FFD700;
+  opacity: 0.4;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-username {
+  font-size: 12px;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+  flex-shrink: 0;
+  min-width: 60px;
+}
+
+.points-value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #991b1b;
+  line-height: 1;
+}
+
+.points-label {
+  font-size: 10px;
+  color: #E63946;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* -----------------
+   Empty State - Mobile Optimized
+   ----------------- */
+.empty-leaderboard {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.empty-illustration {
+  margin-bottom: 30px;
+}
+
+.empty-trophy {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff5f0, #ffe6e6);
+  border-radius: 50%;
+  border: 6px solid #fff;
+  box-shadow: 0 15px 40px rgba(230, 57, 70, 0.15);
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.empty-icon {
+  font-size: 70px;
+  opacity: 0.5;
+}
+
+.empty-pulse {
+  position: absolute;
+  inset: -15px;
+  border-radius: 50%;
+  border: 2px solid #FFD700;
+  animation: expand-ring 2s ease-out infinite;
+}
+
+.empty-title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #E63946;
+  margin-bottom: 12px;
+}
+
+.empty-description {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  padding: 0 10px;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #E63946, #991b1b);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(230, 57, 70, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cta-button:active {
+  transform: scale(0.95);
+}
+
+.cta-icon {
+  font-size: 20px;
+}
+
+.cta-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+/* -----------------
+   Animations
+   ----------------- */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------
+   Tablet Responsive (768px+)
+   ----------------- */
+@media (min-width: 768px) {
+  .zorpido-leaderboard {
+    padding: 80px 20px 100px;
+  }
+
+  .leaderboard-header {
+    margin-bottom: 60px;
+  }
+
+  .trophy-badge {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 25px;
+  }
+
+  .trophy-icon {
+    font-size: 60px;
+  }
+
+  .title-main {
+    font-size: 42px;
+  }
+
+  .title-accent {
+    font-size: 22px;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 17px;
+    max-width: 600px;
+  }
+
+  .champions-podium {
+    max-width: 700px;
+    gap: 40px;
+    margin-bottom: 70px;
+  }
+
+  .champion-card {
+    padding: 35px 25px;
+  }
+
+  .avatar-container {
+    width: 140px;
+    height: 140px;
+    margin: 25px auto 22px;
+  }
+
+  .champion-name {
+    font-size: 22px;
+  }
+
+  .position-first .champion-name {
+    font-size: 24px;
+  }
+
+  .champion-username {
+    font-size: 14px;
+  }
+
+  .points-number {
+    font-size: 22px;
+  }
+
+  .rankings-section {
+    max-width: 900px;
+    padding: 0 20px;
+  }
+
+  .rankings-title {
+    font-size: 28px;
+  }
+
+  .rankings-list {
+    gap: 18px;
+  }
+
+  .ranking-item {
+    padding: 20px 25px;
+    gap: 15px;
+  }
+
+  .rank-number {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+
+  .user-avatar-small {
+    width: 55px;
+    height: 55px;
+  }
+
+  .user-name {
+    font-size: 17px;
+  }
+
+  .user-username {
+    font-size: 13px;
+  }
+
+  .user-points {
+    padding: 10px 16px;
+    min-width: 70px;
+  }
+
+  .points-value {
+    font-size: 18px;
+  }
+
+  .empty-trophy {
+    width: 180px;
+    height: 180px;
+  }
+
+  .empty-icon {
+    font-size: 80px;
+  }
+
+  .empty-title {
+    font-size: 32px;
+  }
+
+  .empty-description {
+    font-size: 17px;
+  }
+
+  .cta-button {
+    padding: 16px 35px;
+    font-size: 17px;
+  }
+
+  /* Show floating shapes on tablet+ */
+  .floating-shapes {
+    display: block;
+  }
+}
+
+/* -----------------
+   Desktop Responsive (1024px+)
+   ----------------- */
+@media (min-width: 1024px) {
+  .zorpido-leaderboard {
+    padding: 100px 20px 120px;
+  }
+
+  .leaderboard-header {
+    margin-bottom: 80px;
+  }
+
+  .trophy-badge {
+    width: 140px;
+    height: 140px;
+  }
+
+  .trophy-icon {
+    font-size: 70px;
+  }
+
+  .title-main {
+    font-size: 52px;
+  }
+
+  .title-accent {
+    font-size: 28px;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 18px;
+  }
+
+  /* Desktop Grid Layout for Top 3 */
+  .champions-podium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin-bottom: 100px;
+    align-items: flex-end;
+  }
+
+  .position-first {
+    order: 2;
+    margin-bottom: 40px;
+  }
+
+  .position-second {
+    order: 1;
+  }
+
+  .position-third {
+    order: 3;
+  }
+
+  .champion-card {
+    padding: 40px 30px;
+  }
+
+  .champion-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 30px 80px rgba(230, 57, 70, 0.2);
+  }
+
+  .crown-icon {
+    font-size: 50px;
+  }
+
+  .medal-badge {
+    width: 50px;
+    height: 50px;
+  }
+
+  .medal-icon {
+    font-size: 30px;
+  }
+
+  .avatar-container {
+    width: 160px;
+    height: 160px;
+  }
+
+  .position-first .avatar-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .champion-name {
+    font-size: 24px;
+  }
+
+  .position-first .champion-name {
+    font-size: 28px;
+  }
+
+  .champion-username {
+    font-size: 14px;
+  }
+
+  .points-display {
+    padding: 12px 25px;
+  }
+
+  .points-number {
+    font-size: 22px;
+  }
+
+  .rank-badge {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .position-first .rank-badge {
+    width: 55px;
+    height: 55px;
+    font-size: 24px;
+  }
+
+  .rankings-section {
+    max-width: 1000px;
+  }
+
+  .rankings-title {
+    font-size: 32px;
+  }
+
+  .rankings-list {
+    gap: 20px;
+  }
+
+  .ranking-item {
+    padding: 25px 30px;
+    gap: 20px;
+  }
+
+  .ranking-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 15px 40px rgba(230, 57, 70, 0.15);
+  }
+
+  .ranking-item:hover .item-shine {
+    left: 100%;
+  }
+
+  .rank-number {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .user-avatar-small {
+    width: 60px;
+    height: 60px;
+  }
+
+  .user-name {
+    font-size: 18px;
+  }
+
+  .user-username {
+    font-size: 14px;
+  }
+
+  .user-points {
+    padding: 10px 20px;
+    min-width: 80px;
+  }
+
+  .points-value {
+    font-size: 20px;
+  }
+
+  .empty-trophy {
+    width: 200px;
+    height: 200px;
+  }
+
+  .empty-icon {
+    font-size: 90px;
+  }
+
+  .empty-title {
+    font-size: 36px;
+  }
+
+  .empty-description {
+    font-size: 18px;
+  }
+
+  .cta-button {
+    padding: 18px 40px;
+    font-size: 18px;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(230, 57, 70, 0.5);
+  }
+
+  .cta-button:hover .cta-shine {
+    left: 100%;
+  }
+
+  /* Increase orb sizes on desktop */
+  .orb-1 {
+    width: 600px;
+    height: 600px;
+  }
+
+  .orb-2 {
+    width: 500px;
+    height: 500px;
+  }
+
+  .orb-3 {
+    width: 400px;
+    height: 400px;
+  }
+
+  .shape {
+    font-size: 30px;
+  }
+}
+
+/* -----------------
+   Large Desktop (1400px+)
+   ----------------- */
+@media (min-width: 1400px) {
+  .champions-podium {
+    max-width: 1300px;
+    gap: 50px;
+  }
+
+  .ranking-item {
+    padding: 28px 35px;
+  }
+}
+
+/* -----------------
+   Touch Device Optimizations
+   ----------------- */
+@media (hover: none) and (pointer: coarse) {
+  .champion-card:hover,
+  .ranking-item:hover,
+  .cta-button:hover {
+    transform: none;
+  }
+
+  .champion-card:active {
+    transform: scale(0.98);
+  }
+
+  .ranking-item:active {
+    transform: scale(0.98);
+  }
+
+  .cta-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Disable parallax on touch devices */
+  .floating-shapes {
+    display: none;
+  }
+}
+
+/* -----------------
+   Reduced Motion Support
+   ----------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -----------------
+   Print Styles
+   ----------------- */
+@media print {
+  .leaderboard-background,
+  .floating-shapes,
+  .trophy-ring,
+  .crown-sparkle,
+  .item-shine,
+  .cta-shine,
+  .empty-pulse {
+    display: none;
+  }
+
+  .zorpido-leaderboard {
+    background: white;
+  }
+
+  .champion-card,
+  .ranking-item {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
+
+/* -----------------
+   Extra Small Devices (320px - 480px)
+   ----------------- */
+@media (max-width: 480px) {
+  .zorpido-leaderboard {
+    padding: 50px 10px 60px;
+  }
+
+  .trophy-badge {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 18px;
+  }
+
+  .trophy-icon {
+    font-size: 45px;
+  }
+
+  .title-main {
+    font-size: 28px;
+  }
+
+  .title-accent {
+    font-size: 16px;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 14px;
+  }
+
+  .champions-podium {
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .champion-card {
+    padding: 20px 15px;
+  }
+
+  .crown-icon {
+    font-size: 30px;
+  }
+
+  .medal-badge {
+    width: 35px;
+    height: 35px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .medal-icon {
+    font-size: 20px;
+  }
+
+  .avatar-container {
+    width: 100px;
+    height: 100px;
+    margin: 18px auto 18px;
+  }
+
+  .rank-badge {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .champion-name {
+    font-size: 18px;
+  }
+
+  .position-first .champion-name {
+    font-size: 20px;
+  }
+
+  .champion-username {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .points-display {
+    padding: 8px 16px;
+    gap: 5px;
+  }
+
+  .points-icon {
+    font-size: 16px;
+  }
+
+  .points-number {
+    font-size: 18px;
+  }
+
+  .points-text {
+    font-size: 10px;
+  }
+
+  .rankings-title {
+    font-size: 22px;
+    gap: 8px;
+  }
+
+  .rankings-icon {
+    font-size: 26px;
+  }
+
+  .rankings-list {
+    gap: 12px;
+  }
+
+  .ranking-item {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .rank-number {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .user-avatar-small {
+    width: 45px;
+    height: 45px;
+  }
+
+  .user-name {
+    font-size: 15px;
+  }
+
+  .user-username {
+    font-size: 11px;
+  }
+
+  .user-points {
+    padding: 6px 10px;
+    min-width: 55px;
+  }
+
+  .points-value {
+    font-size: 15px;
+  }
+
+  .points-label {
+    font-size: 9px;
+  }
+
+  .empty-trophy {
+    width: 130px;
+    height: 130px;
+  }
+
+  .empty-icon {
+    font-size: 60px;
+  }
+
+  .empty-title {
+    font-size: 24px;
+  }
+
+  .empty-description {
+    font-size: 14px;
+  }
+
+  .cta-button {
+    padding: 12px 24px;
+    font-size: 15px;
+    gap: 8px;
+  }
+
+  .cta-icon {
+    font-size: 18px;
+  }
+}
+
+/* -----------------
+   Landscape Mobile Optimization
+   ----------------- */
+@media (max-height: 600px) and (orientation: landscape) {
+  .zorpido-leaderboard {
+    padding: 40px 15px 50px;
+  }
+
+  .leaderboard-header {
+    margin-bottom: 30px;
+  }
+
+  .trophy-badge {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
+
+  .trophy-icon {
+    font-size: 40px;
+  }
+
+  .champions-podium {
+    margin-bottom: 35px;
+  }
+
+  .avatar-container {
+    width: 90px;
+    height: 90px;
+    margin: 15px auto;
+  }
+}
+
+/* -----------------
+   Focus Visible for Better Accessibility
+   ----------------- */
+.champion-card:focus-visible,
+.ranking-item:focus-visible,
+.cta-button:focus-visible {
+  outline: 3px solid #FFD700;
+  outline-offset: 3px;
+}
+
+/* -----------------
+   High Contrast Mode Support
+   ----------------- */
+@media (prefers-contrast: high) {
+  .champion-card,
+  .ranking-item {
+    border: 2px solid currentColor;
+  }
+
+  .trophy-ring,
+  .avatar-ring {
+    border-width: 3px;
+  }
+}
+
+/* -----------------
+   Safe Area Insets for Notched Devices
+   ----------------- */
+@supports (padding: max(0px)) {
+  .zorpido-leaderboard {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+  }
+
+  .zorpido-leaderboard .container {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+  }
+}
 </style>
 
-<div class="leaderboard-scene">
-    <div class="bg-circles">
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
+<section class="zorpido-leaderboard">
+
+    <!-- Animated Background Elements -->
+    <div class="leaderboard-background">
+        <div class="bg-gradient-orb orb-1"></div>
+        <div class="bg-gradient-orb orb-2"></div>
+        <div class="bg-gradient-orb orb-3"></div>
+        <div class="floating-shapes">
+            <div class="shape shape-1">⭐</div>
+            <div class="shape shape-2">💎</div>
+            <div class="shape shape-3">🔥</div>
+            <div class="shape shape-4">✨</div>
+            <div class="shape shape-5">🎯</div>
+        </div>
     </div>
 
-    <div class="hero-header">
-        <div class="trophy-circle">🏆</div>
-       <h1 class="main-title">Our Zorpido Stars</h1>
-      <p class="sub-title">Top 20 Most Loyal Visitors</p>
-    </div>
+    <div class="container">
 
-    {% if leaderboard_users and leaderboard_users|length > 0 %}
+        <!-- Section Header -->
+        <div class="leaderboard-header">
+            <div class="trophy-badge">
+                <div class="trophy-glow"></div>
+                <span class="trophy-icon">🏆</span>
+                <div class="trophy-ring"></div>
+                <div class="trophy-ring ring-2"></div>
+            </div>
+            <h1 class="leaderboard-title">
+                <span class="title-main">Hall of Champions</span>
+                <span class="title-accent">Zorpido Stars</span>
+            </h1>
+            <p class="leaderboard-subtitle">Celebrating our most loyal customers and their amazing journey</p>
+        </div>
 
-    <!-- Top 3 Champions -->
-    {% if leaderboard_users|length >= 3 %}
-    <div class="champions-orbit">
-        {% for user in leaderboard_users|slice:":3" %}
-        <div
-            class="champion {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% else %}third{% endif %}">
-            <div class="orbit-ring">
-                <div class="outer-ring">
-                    <div class="middle-ring">
-                        {% if forloop.counter == 1 %}
-                        <div class="crown-circle">👑</div>
+        {% if leaderboard_users and leaderboard_users|length > 0 %}
+
+        <!-- Top 3 Podium -->
+        {% if leaderboard_users|length >= 3 %}
+        <div class="champions-podium">
+
+            <!-- 2nd Place -->
+            <div class="podium-position position-second" data-rank="2">
+                <div class="champion-card">
+                    <div class="medal-badge silver-medal">
+                        <span class="medal-icon">🥈</span>
+                    </div>
+                    <div class="avatar-container">
+                        <div class="avatar-ring ring-silver"></div>
+                        <div class="avatar-glow glow-silver"></div>
+                        {% if leaderboard_users.1.profile_picture and leaderboard_users.1.profile_picture.url %}
+                        <img src="{{ leaderboard_users.1.profile_picture.url }}"
+                            alt="{{ leaderboard_users.1.full_name|default:leaderboard_users.1.username }}"
+                            class="champion-avatar">
+                        {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="default avatar"
+                            class="champion-avatar">
                         {% endif %}
-
-                        <div class="avatar-circle">
-                            {% if user.profile_picture and user.profile_picture.url %}
-                            <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name|default:user.username }}">
-                            {% else %}
-                            <img src="{% static 'images/default_profile.png' %}" alt="default avatar">
-                            {% endif %}
+                        <div class="rank-badge rank-2">2</div>
+                    </div>
+                    <div class="champion-details">
+                        <h3 class="champion-name">{{ leaderboard_users.1.full_name|default:leaderboard_users.1.username
+                            }}</h3>
+                        <p class="champion-username">@{{ leaderboard_users.1.username }}</p>
+                        <div class="points-display">
+                            <span class="points-icon">⭐</span>
+                            <span class="points-number">{{ leaderboard_users.1.loyalty_points }}</span>
+                            <span class="points-text">points</span>
                         </div>
-
-                        <div class="rank-circle">{{ forloop.counter }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="champion-info">
-                <div class="champion-name">{{ user.full_name|default:user.username }}</div>
-                <div class="champion-username">@{{ user.username }}</div>
-                <div class="points-circle">
-                    <span class="points-label">POINTS</span>
-                    <span class="points-value">{{ user.loyalty_points }}</span>
+            <!-- 1st Place (Center, Elevated) -->
+            <div class="podium-position position-first" data-rank="1">
+                <div class="champion-card">
+                    <div class="crown-decoration">
+                        <span class="crown-icon">👑</span>
+                        <div class="crown-sparkle"></div>
+                        <div class="crown-sparkle"></div>
+                        <div class="crown-sparkle"></div>
+                    </div>
+                    <div class="medal-badge gold-medal">
+                        <span class="medal-icon">🥇</span>
+                    </div>
+                    <div class="avatar-container">
+                        <div class="avatar-ring ring-gold"></div>
+                        <div class="avatar-glow glow-gold"></div>
+                        {% if leaderboard_users.0.profile_picture and leaderboard_users.0.profile_picture.url %}
+                        <img src="{{ leaderboard_users.0.profile_picture.url }}"
+                            alt="{{ leaderboard_users.0.full_name|default:leaderboard_users.0.username }}"
+                            class="champion-avatar">
+                        {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="default avatar"
+                            class="champion-avatar">
+                        {% endif %}
+                        <div class="rank-badge rank-1">1</div>
+                    </div>
+                    <div class="champion-details">
+                        <h3 class="champion-name">{{ leaderboard_users.0.full_name|default:leaderboard_users.0.username
+                            }}</h3>
+                        <p class="champion-username">@{{ leaderboard_users.0.username }}</p>
+                        <div class="points-display">
+                            <span class="points-icon">⭐</span>
+                            <span class="points-number">{{ leaderboard_users.0.loyalty_points }}</span>
+                            <span class="points-text">points</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
-    <!-- Remaining Rankings -->
-    {% if leaderboard_users|length > 3 %}
-    <div class="rankings-grid">
-        <div class="rank-circles-container">
-            {% for user in leaderboard_users|slice:"3:" %}
-            <div class="rank-item-circle">
-                <div class="rank-badge-circle">{{ forloop.counter|add:3 }}</div>
-
-                <div class="rank-avatar-circle">
-                    {% if user.profile_picture and user.profile_picture.url %}
-                    <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name|default:user.username }}">
-                    {% else %}
-                    <img src="{% static 'images/default_profile.png' %}" alt="default avatar">
-                    {% endif %}
-                </div>
-
-                <div class="rank-user-info">
-                    <div class="rank-user-name">{{ user.full_name|default:user.username }}</div>
-                    <div class="rank-user-username">@{{ user.username }}</div>
-                </div>
-
-                <div class="rank-points-circle">
-                    <span class="rank-points-value">{{ user.loyalty_points }}</span>
-                    <span class="rank-points-label">PTS</span>
+            <!-- 3rd Place -->
+            <div class="podium-position position-third" data-rank="3">
+                <div class="champion-card">
+                    <div class="medal-badge bronze-medal">
+                        <span class="medal-icon">🥉</span>
+                    </div>
+                    <div class="avatar-container">
+                        <div class="avatar-ring ring-bronze"></div>
+                        <div class="avatar-glow glow-bronze"></div>
+                        {% if leaderboard_users.2.profile_picture and leaderboard_users.2.profile_picture.url %}
+                        <img src="{{ leaderboard_users.2.profile_picture.url }}"
+                            alt="{{ leaderboard_users.2.full_name|default:leaderboard_users.2.username }}"
+                            class="champion-avatar">
+                        {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="default avatar"
+                            class="champion-avatar">
+                        {% endif %}
+                        <div class="rank-badge rank-3">3</div>
+                    </div>
+                    <div class="champion-details">
+                        <h3 class="champion-name">{{ leaderboard_users.2.full_name|default:leaderboard_users.2.username
+                            }}</h3>
+                        <p class="champion-username">@{{ leaderboard_users.2.username }}</p>
+                        <div class="points-display">
+                            <span class="points-icon">⭐</span>
+                            <span class="points-number">{{ leaderboard_users.2.loyalty_points }}</span>
+                            <span class="points-text">points</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 
-    {% else %}
-    <div class="rankings-grid">
-        <div class="empty-state-circle">
-            <div class="empty-icon-circle">🏆</div>
-            <h2>Be First</h2>
-            <p>The championship throne awaits! Join our loyalty program and become the first legend in our hall of
-                champions.</p>
-            <a href="{% url 'users:register' %}" class="join-circle-btn">🚀 CLAIM YOUR SPOT</a>
         </div>
+        {% endif %}
+
+        <!-- Remaining Rankings (4+) -->
+        {% if leaderboard_users|length > 3 %}
+        <div class="rankings-section">
+            <h2 class="rankings-title">
+                <span class="rankings-icon">🌟</span>
+                Rising Stars
+            </h2>
+            <div class="rankings-list">
+                {% for user in leaderboard_users|slice:"3:" %}
+                <div class="ranking-item" data-rank="{{ forloop.counter|add:3 }}">
+                    <div class="rank-number">{{ forloop.counter|add:3 }}</div>
+
+                    <div class="user-avatar-small">
+                        {% if user.profile_picture and user.profile_picture.url %}
+                        <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name|default:user.username }}">
+                        {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="default avatar">
+                        {% endif %}
+                        <div class="avatar-border"></div>
+                    </div>
+
+                    <div class="user-info">
+                        <h4 class="user-name">{{ user.full_name|default:user.username }}</h4>
+                        <p class="user-username">@{{ user.username }}</p>
+                    </div>
+
+                    <div class="user-points">
+                        <span class="points-value">{{ user.loyalty_points }}</span>
+                        <span class="points-label">pts</span>
+                    </div>
+
+                    <div class="item-shine"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+
+        <!-- Empty State -->
+        <div class="empty-leaderboard">
+            <div class="empty-illustration">
+                <div class="empty-trophy">
+                    <span class="empty-icon">🏆</span>
+                    <div class="empty-pulse"></div>
+                </div>
+            </div>
+            <h2 class="empty-title">The Journey Begins Here</h2>
+            <p class="empty-description">
+                Be among the first to climb the ranks! Start earning loyalty points today
+                and secure your place in the Hall of Champions.
+            </p>
+            <a href="{% url 'users:register' %}" class="cta-button">
+                <span class="cta-icon">🚀</span>
+                <span class="cta-text">Start Your Journey</span>
+                <div class="cta-shine"></div>
+            </a>
+        </div>
+
+        {% endif %}
+
     </div>
-    {% endif %}
-</div>
+</section>
+<script>
+    /* ===============================================
+       LEADERBOARD SECTION - JAVASCRIPT
+       Animations, Interactions, Dynamic Effects
+       =============================================== */
+
+    (function () {
+        'use strict';
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+
+            /* -----------------
+               Initialize Leaderboard
+               ----------------- */
+            function initLeaderboard() {
+                initIntersectionObserver();
+                initCountUpAnimation();
+                initHoverEffects();
+                initRankingAnimations();
+                addAccessibilityFeatures();
+            }
+
+            /* -----------------
+               Intersection Observer for Scroll Animations
+               ----------------- */
+            function initIntersectionObserver() {
+                const observerOptions = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.1
+                };
+
+                const observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-in');
+
+                            // If it's a ranking item, trigger count-up
+                            if (entry.target.classList.contains('ranking-item')) {
+                                const pointsElement = entry.target.querySelector('.points-value');
+                                if (pointsElement && !pointsElement.classList.contains('counted')) {
+                                    animateCountUp(pointsElement);
+                                }
+                            }
+                        }
+                    });
+                }, observerOptions);
+
+                // Observe champion cards
+                const championCards = document.querySelectorAll('.champion-card');
+                championCards.forEach(function (card) {
+                    observer.observe(card);
+                });
+
+                // Observe ranking items
+                const rankingItems = document.querySelectorAll('.ranking-item');
+                rankingItems.forEach(function (item) {
+                    observer.observe(item);
+                });
+            }
+
+            /* -----------------
+               Count-Up Animation for Points
+               ----------------- */
+            function initCountUpAnimation() {
+                // Animate points for champions
+                const championPoints = document.querySelectorAll('.points-number');
+                championPoints.forEach(function (element) {
+                    // Delay animation until podium is visible
+                    setTimeout(function () {
+                        animateCountUp(element);
+                    }, 1000);
+                });
+            }
+
+            function animateCountUp(element) {
+                if (!element || element.classList.contains('counted')) return;
+
+                const targetValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+                const duration = 2000; // 2 seconds
+                const steps = 60;
+                const increment = targetValue / steps;
+                const stepDuration = duration / steps;
+                let currentValue = 0;
+
+                element.classList.add('counted');
+
+                const timer = setInterval(function () {
+                    currentValue += increment;
+
+                    if (currentValue >= targetValue) {
+                        currentValue = targetValue;
+                        clearInterval(timer);
+                    }
+
+                    element.textContent = formatNumber(Math.floor(currentValue));
+                }, stepDuration);
+            }
+
+            function formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
+            /* -----------------
+               Hover Effects & Interactions
+               ----------------- */
+            function initHoverEffects() {
+                // Add ripple effect to champion cards
+                const championCards = document.querySelectorAll('.champion-card');
+                championCards.forEach(function (card) {
+                    card.addEventListener('mouseenter', function () {
+                        createSparkles(this);
+                    });
+                });
+
+                // Add glow effect to ranking items
+                const rankingItems = document.querySelectorAll('.ranking-item');
+                rankingItems.forEach(function (item) {
+                    item.addEventListener('mouseenter', function () {
+                        this.style.borderColor = 'rgba(230, 57, 70, 0.3)';
+                    });
+
+                    item.addEventListener('mouseleave', function () {
+                        this.style.borderColor = '';
+                    });
+                });
+
+                // CTA button hover effect
+                const ctaButton = document.querySelector('.cta-button');
+                if (ctaButton) {
+                    ctaButton.addEventListener('mouseenter', function () {
+                        this.style.transform = 'translateY(-5px) scale(1.05)';
+                    });
+
+                    ctaButton.addEventListener('mouseleave', function () {
+                        this.style.transform = '';
+                    });
+                }
+            }
+
+            /* -----------------
+               Create Sparkle Effect
+               ----------------- */
+            function createSparkles(container) {
+                const sparkleCount = 3;
+
+                for (let i = 0; i < sparkleCount; i++) {
+                    setTimeout(function () {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'dynamic-sparkle';
+                        sparkle.textContent = '✨';
+
+                        // Random position around the card
+                        const angle = (Math.random() * 360) * (Math.PI / 180);
+                        const distance = 30 + Math.random() * 20;
+                        const x = Math.cos(angle) * distance;
+                        const y = Math.sin(angle) * distance;
+
+                        sparkle.style.cssText = `
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 100;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation: sparkle-fly 1s ease-out forwards;
+            --tx: ${x}px;
+            --ty: ${y}px;
+          `;
+
+                        container.appendChild(sparkle);
+
+                        setTimeout(function () {
+                            sparkle.remove();
+                        }, 1000);
+                    }, i * 150);
+                }
+            }
+
+            /* -----------------
+               Ranking Items Stagger Animation
+               ----------------- */
+            function initRankingAnimations() {
+                const rankingItems = document.querySelectorAll('.ranking-item');
+
+                rankingItems.forEach(function (item, index) {
+                    item.style.setProperty('--rank', index + 4);
+                });
+            }
+
+            /* -----------------
+               Parallax Effect for Background Elements
+               ----------------- */
+            function initParallaxEffect() {
+                const shapes = document.querySelectorAll('.shape');
+                const orbs = document.querySelectorAll('.bg-gradient-orb');
+
+                document.addEventListener('mousemove', function (e) {
+                    const mouseX = e.clientX / window.innerWidth;
+                    const mouseY = e.clientY / window.innerHeight;
+
+                    shapes.forEach(function (shape, index) {
+                        const speed = (index + 1) * 0.5;
+                        const x = (mouseX - 0.5) * speed * 50;
+                        const y = (mouseY - 0.5) * speed * 50;
+                        shape.style.transform = `translate(${x}px, ${y}px)`;
+                    });
+
+                    orbs.forEach(function (orb, index) {
+                        const speed = (index + 1) * 0.2;
+                        const x = (mouseX - 0.5) * speed * 30;
+                        const y = (mouseY - 0.5) * speed * 30;
+                        orb.style.transform = `translate(${x}px, ${y}px)`;
+                    });
+                });
+            }
+
+            // Only init parallax on desktop
+            if (window.innerWidth > 768) {
+                initParallaxEffect();
+            }
+
+            /* -----------------
+               Avatar Image Error Handling
+               ----------------- */
+            function initImageErrorHandling() {
+                const avatarImages = document.querySelectorAll('.champion-avatar, .user-avatar-small img');
+
+                avatarImages.forEach(function (img) {
+                    img.addEventListener('error', function () {
+                        // Fallback to default image if loading fails
+                        this.src = '/static/images/default_profile.png';
+                    });
+                });
+            }
+
+            initImageErrorHandling();
+
+            /* -----------------
+               Accessibility Features
+               ----------------- */
+            function addAccessibilityFeatures() {
+                // Add aria-labels to ranking items
+                const rankingItems = document.querySelectorAll('.ranking-item');
+
+                rankingItems.forEach(function (item) {
+                    const rank = item.getAttribute('data-rank');
+                    const userName = item.querySelector('.user-name')?.textContent;
+                    const points = item.querySelector('.points-value')?.textContent;
+
+                    if (userName && points) {
+                        item.setAttribute('aria-label', `Rank ${rank}: ${userName} with ${points} points`);
+                    }
+                });
+
+                // Add aria-labels to champion cards
+                const championCards = document.querySelectorAll('.podium-position');
+
+                championCards.forEach(function (position) {
+                    const rank = position.getAttribute('data-rank');
+                    const userName = position.querySelector('.champion-name')?.textContent;
+                    const points = position.querySelector('.points-number')?.textContent;
+
+                    if (userName && points) {
+                        position.setAttribute('aria-label', `${rank === '1' ? 'First' : rank === '2' ? 'Second' : 'Third'} place: ${userName} with ${points} points`);
+                    }
+                });
+
+                // Make champion cards keyboard navigable
+                const allChampionCards = document.querySelectorAll('.champion-card');
+                allChampionCards.forEach(function (card) {
+                    card.setAttribute('tabindex', '0');
+
+                    card.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            this.click();
+                        }
+                    });
+                });
+            }
+
+            /* -----------------
+               Smooth Scroll for CTA Button
+               ----------------- */
+            function initSmoothScroll() {
+                const ctaButton = document.querySelector('.cta-button');
+
+                if (ctaButton) {
+                    ctaButton.addEventListener('click', function (e) {
+                        // Only prevent default for anchor links
+                        const href = this.getAttribute('href');
+                        if (href && href.startsWith('#')) {
+                            e.preventDefault();
+                            const targetId = href.substring(1);
+                            const targetElement = document.getElementById(targetId);
+
+                            if (targetElement) {
+                                targetElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+
+            initSmoothScroll();
+
+            /* -----------------
+               Performance Optimization
+               ----------------- */
+            // Reduce animations on low-end devices
+            function optimizePerformance() {
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+                if (prefersReducedMotion.matches) {
+                    document.documentElement.classList.add('reduce-motion');
+                }
+            }
+
+            optimizePerformance();
+
+            /* -----------------
+               Initialize Everything
+               ----------------- */
+            initLeaderboard();
+
+            // Refresh animations when window is resized
+            let resizeTimer;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    // Re-initialize parallax on resize
+                    if (window.innerWidth > 768) {
+                        initParallaxEffect();
+                    }
+                }, 250);
+            });
+
+        });
+
+        /* -----------------
+           Add Dynamic CSS for Sparkle Animation
+           ----------------- */
+        const style = document.createElement('style');
+        style.textContent = `
+    @keyframes sparkle-fly {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.5);
+      }
+    }
+
+    .reduce-motion * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .animate-in {
+      animation-play-state: running !important;
+    }
+
+    /* Additional hover effects */
+    .champion-card {
+      cursor: pointer;
+    }
+
+    .ranking-item {
+      cursor: pointer;
+    }
+
+    /* Focus styles for accessibility */
+    .champion-card:focus,
+    .ranking-item:focus,
+    .cta-button:focus {
+      outline: 3px solid #FFD700;
+      outline-offset: 3px;
+    }
+
+    /* Loading state */
+    .leaderboard-loading {
+      text-align: center;
+      padding: 100px 20px;
+      font-size: 24px;
+      color: #E63946;
+    }
+
+    .leaderboard-loading::after {
+      content: '...';
+      animation: loading-dots 1.5s steps(3, end) infinite;
+    }
+
+    @keyframes loading-dots {
+      0%, 20% {
+        content: '.';
+      }
+      40% {
+        content: '..';
+      }
+      60%, 100% {
+        content: '...';
+      }
+    }
+  `;
+        document.head.appendChild(style);
+
+    })();
+</script>

@@ -25,121 +25,147 @@
 
 
 {% block content %}
-
-
-<!-----------------------
-Hero Section 
------------------------>
+<!-- Hero Section -->
 <section id="hero" class="zorpido-hero-section">
-  <div class="container">
-    <div class="hero-decorations">
-      <div class="floating-shape shape-1"></div>
-      <div class="floating-shape shape-2"></div>
-      <div class="floating-shape shape-3"></div>
-      <div class="floating-emoji emoji-2">🍰</div>
-      <div class="floating-emoji emoji-3">❤️</div>
-      <div class="floating-emoji emoji-4">⭐</div>
-      <div class="particle-container" id="particles"></div>
-    </div>
+  <!-- Animated Background Elements -->
+  <div class="background-elements">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    <div class="floating-emoji emoji-1">☕</div>
+    <div class="floating-emoji emoji-2">🍰</div>
+    <div class="floating-emoji emoji-3">❤️</div>
+    <div class="floating-emoji emoji-4">⭐</div>
+  </div>
 
+  <!-- Main Content -->
+  <div class="container">
     <div class="hero-content">
-      <div class="hero-badge">
-        <span class="badge-text">🎉 Welcome to Zorpido</span>
+
+      <!-- Welcome Badge -->
+      <div class="welcome-badge">
+        <span class="emoji">🎉</span>
+        <span class="text">Welcome to Zorpido</span>
         <div class="badge-shine"></div>
       </div>
 
+      <!-- Main Heading -->
       <h1 class="hero-title">
-        <span class="title-word word-1">Good <span class="highlight-red">food,<span class="highlight-yellow"> warm service</span></span></span>
-        <span class="title-word word-3">fair <span class="highlight-black">value, and a place to</span></span>
-        <span class="highlight-red fade-up">sit, relax, and feel connected</span>
+        <span class="text-gray">Good </span>
+        <span class="text-red">food,</span>
+        <br>
+        <span class="text-yellow">warm service</span>
+        <br>
+        <span class="text-gray">fair </span>
+        <span class="text-dark">value, and a place to</span>
+        <br>
+        <span class="text-red underline-text">
+          sit, relax, and feel connected
+          <svg class="underline-svg" viewBox="0 0 300 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 5C50 2 100 1 150 3C200 5 250 6 299 4" stroke="#FBC02D" stroke-width="3"
+              stroke-linecap="round" />
+          </svg>
+        </span>
       </h1>
-      <div class="hero-subtitle-wrapper">
-        <p class="hero-subtitle">
-         - That’s <img src="{% static 'images/logo.png' %}" alt="Zorpido Café Logo" style="height:40px; width:auto;">
+
+      <!-- Subtitle with Logo -->
+      <div class="hero-subtitle" style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  ">
+        <p style="
+      margin: 0;
+      font-size: px;
+      font-weight: 500;
+      color: #C62828; /* Zorpido Red */
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    ">
+          – That’s
+          <img src="{% static 'images/logo.png' %}" alt="Zorpido Logo" style="
+        height: 50px;
+        width: auto;
+        vertical-align: middle;
+      ">
         </p>
-        <div class="subtitle-underline"></div>
       </div>
 
-      <div class="feature-pills">
-        <span class="pill pill-1">
-          <i class="bi bi-lightning-charge-fill"></i> Fast Service
-        </span>
-        <span class="pill pill-2">
-          <i class="bi bi-star-fill"></i> Loyalty Rewards
-        </span>
-      </div>
 
+      <!-- CTA Buttons -->
       <div class="hero-buttons">
-        <a href="{% url 'menu:list' %}" class="hero-btn btn-primary">
+        <a href="{% url 'menu:list' %}"  class="hero-btn btn-primary">
           <span class="btn-bg"></span>
-          <span class="btn-icon">
-            <i class="bi bi-cup-hot-fill"></i>
-          </span>
-          <span class="btn-text">View Menu</span>
-          <span class="btn-arrow">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
-            </svg>
-          </span>
+          <i class="fas fa-mug-hot"></i>
+          <span>View Menu</span>
+          <i class="fas fa-arrow-right arrow"></i>
           <span class="btn-shine"></span>
         </a>
 
         <a href="{% url 'users:register' %}" class="hero-btn btn-secondary">
           <span class="btn-bg"></span>
-          <span class="btn-icon">
-            <i class="bi bi-gift-fill"></i>
-          </span>
-          <span class="btn-text">Join Loyalty Program</span>
-          <span class="btn-arrow">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"></path>
-            </svg>
-          </span>
-          <span class="btn-shine"></span>
+          <i class="fas fa-gift"></i>
+          <span>Join Loyalty Program</span>
+          <i class="fas fa-arrow-right arrow"></i>
         </a>
       </div>
 
+      <!-- Social Proof -->
       <div class="social-proof">
         <div class="proof-item">
           <div class="proof-avatars">
-            <div class="avatar avatar-1">👤</div>
-            <div class="avatar avatar-2">👤</div>
-            <div class="avatar avatar-3">👤</div>
-            <div class="avatar avatar-plus">+99</div>
+            <div class="avatar">A</div>
+            <div class="avatar">B</div>
+            <div class="avatar">C</div>
+            <div class="avatar">+99</div>
           </div>
           <div class="proof-text">
-            <strong>100+</strong> happy customers
+            <strong>100+</strong>
+            <small>happy customers</small>
           </div>
         </div>
+
         <div class="proof-divider"></div>
+
         <div class="proof-item">
           <div class="proof-rating">
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-half"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
           </div>
           <div class="proof-text">
-            <strong>4.8/5</strong> rating
+            <strong>4.8/5</strong>
+            <small>rating</small>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="scroll-indicator">
-      <div class="scroll-mouse">
-        <div class="scroll-wheel"></div>
-      </div>
-      <span class="scroll-text">Scroll to explore</span>
     </div>
   </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-mouse">
+      <div class="scroll-wheel"></div>
+    </div>
+    <span class="scroll-text">Scroll to explore</span>
+  </div>
+
+  <!-- Bottom Wave -->
   <div class="hero-wave">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="#FFFFFF" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="#F9FAFB" fill-opacity="1"
+        d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+      </path>
     </svg>
   </div>
 </section>
+
 
 <!---------------------
   Featured Image Slider Section
@@ -786,14 +812,15 @@ Hero Section
   </div>
 </div>
 
-<!-- ---------------
-  Testimonials Section 
-  ------------------------->
-<!-- ---------------
-  Enhanced Testimonials Section 
-  ------------------------->
+<!-- ===============================================
+     TESTIMONIALS SECTION - Zorpido Café
+     Modern, Auto-sliding, Responsive Design
+     =============================================== -->
+
 <section class="zorpido-testimonials">
   <div class="container">
+
+    <!-- Section Header -->
     <div class="testimonials-header">
       <div class="header-badge">
         <span class="badge-icon">💬</span>
@@ -803,117 +830,103 @@ Hero Section
       <p class="section-subtitle">Real experiences from real people who trust Zorpido</p>
     </div>
 
+    <!-- Floating Background Quote Marks -->
     <div class="floating-quotes">
       <div class="quote-float quote-1">"</div>
       <div class="quote-float quote-2">"</div>
-      <div class="quote-float quote-3">"</div>
-      <div class="quote-float quote-4">"</div>
     </div>
 
+    <!-- Testimonial Content -->
     <div class="testimonial-slider-container">
       {% if testimonials %}
-        <div class="testimonial-slider">
-          {% for t in testimonials %}
-          <div class="testimonial-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
-            <div class="slide-content">
-              <div class="customer-image-section">
-                <div class="image-wrapper">
-                  <div class="image-glow"></div>
-                  <div class="image-ring"></div>
-                  {% if t.profile_picture %}
-                    <img src="{{ t.profile_picture.url }}" alt="{{ t.customer_name }}" class="customer-photo">
-                  {% else %}
-                    <img src="{% static 'images/default_profile.png' %}" alt="{{ t.customer_name }}" class="customer-photo">
-                  {% endif %}
-                  <div class="verified-badge">
-                    <i class="bi bi-patch-check-fill"></i>
-                    <div class="verified-pulse"></div>
-                  </div>
-                </div>
-                <div class="customer-info-mobile">
-                  <h3 class="customer-name">{{ t.customer_name }}</h3>
-                  <div class="rating-stars">
-                    {% for i in "12345"|make_list %}
-                      {% if forloop.counter <= t.rating %}
-                        <i class="bi bi-star-fill star-filled"></i>
-                      {% else %}
-                        <i class="bi bi-star star-empty"></i>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                  <p class="customer-label">
-                    <i class="bi bi-patch-check-fill"></i> Verified Customer
-                  </p>
-                </div>
-              </div>
 
-              <div class="testimonial-content-section">
-                <div class="quote-icon-large">"</div>
-                
-                <div class="rating-stars-desktop">
-                  {% for i in "12345"|make_list %}
-                    {% if forloop.counter <= t.rating %}
-                      <i class="bi bi-star-fill star-filled"></i>
-                    {% else %}
-                      <i class="bi bi-star star-empty"></i>
-                    {% endif %}
-                  {% endfor %}
-                </div>
+      <!-- Testimonial Cards Slider -->
+      <div class="testimonial-slider">
+        {% for t in testimonials %}
+        <div class="testimonial-card {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
 
-                <p class="testimonial-message">{{ t.message }}</p>
-
-                <div class="customer-info-desktop">
-                  <h3 class="customer-name">{{ t.customer_name }}</h3>
-                  <p class="customer-label">
-                    <i class="bi bi-patch-check-fill"></i> Verified Customer
-                  </p>
-                </div>
-
-                <div class="quote-icon-large quote-close">"</div>
+          <!-- Customer Profile Section -->
+          <div class="customer-profile">
+            <div class="profile-image-wrapper">
+              <div class="image-glow"></div>
+              {% if t.profile_picture %}
+              <img src="{{ t.profile_picture.url }}" alt="{{ t.customer_name }}" class="customer-photo">
+              {% else %}
+              <img src="{% static 'images/default_profile.png' %}" alt="{{ t.customer_name }}" class="customer-photo">
+              {% endif %}
+              <div class="verified-badge">
+                <i class="bi bi-patch-check-fill"></i>
               </div>
             </div>
+
+            <div class="customer-details">
+              <h3 class="customer-name">{{ t.customer_name }}</h3>
+              <p class="customer-badge">
+                <i class="bi bi-patch-check-fill"></i> Verified Customer
+              </p>
+            </div>
           </div>
+
+          <!-- Rating Stars -->
+          <div class="rating-stars">
+            {% for i in "12345"|make_list %}
+            {% if forloop.counter <= t.rating %} <i class="bi bi-star-fill"></i>
+              {% else %}
+              <i class="bi bi-star"></i>
+              {% endif %}
+              {% endfor %}
+          </div>
+
+          <!-- Testimonial Message -->
+          <div class="testimonial-message">
+            <div class="quote-icon">"</div>
+            <p>{{ t.message }}</p>
+            <div class="quote-icon quote-close">"</div>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Navigation Controls -->
+      <div class="slider-navigation">
+        <button class="nav-btn prev-btn" aria-label="Previous testimonial">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="slider-dots">
+          {% for t in testimonials %}
+          <button class="dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}"
+            aria-label="Go to testimonial {{ forloop.counter }}">
+          </button>
           {% endfor %}
         </div>
 
-        <div class="slider-controls">
-          <button class="control-btn prev-btn" aria-label="Previous testimonial">
-            <i class="bi bi-chevron-left"></i>
-            <span class="btn-ripple"></span>
-          </button>
-          
-          <div class="slider-dots">
-            {% for t in testimonials %}
-            <button class="dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Go to testimonial {{ forloop.counter }}">
-              <span class="dot-inner"></span>
-            </button>
-            {% endfor %}
-          </div>
-          
-          <button class="control-btn next-btn" aria-label="Next testimonial">
-            <i class="bi bi-chevron-right"></i>
-            <span class="btn-ripple"></span>
-          </button>
-        </div>
+        <button class="nav-btn next-btn" aria-label="Next testimonial">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
 
-        <div class="progress-bar">
-          <div class="progress-fill"></div>
-          <div class="progress-glow"></div>
-        </div>
+      <!-- Progress Bar -->
+      <div class="auto-progress-bar">
+        <div class="progress-fill"></div>
+      </div>
 
       {% else %}
-        <div class="empty-testimonials">
-          <div class="empty-icon">💭</div>
-          <h3>No Testimonials Yet</h3>
-          <p>Be the first to share your amazing experience with Zorpido!</p>
-          <a href="#" class="btn-share-experience">
-            <i class="bi bi-chat-dots"></i> 
-            <span>Share Your Experience</span>
-            <span class="btn-shine"></span>
-          </a>
-        </div>
+
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">💭</div>
+        <h3>No Testimonials Yet</h3>
+        <p>Be the first to share your amazing experience with Zorpido!</p>
+        <a href="#contact" class="btn-share">
+          <i class="bi bi-chat-dots"></i> Share Your Experience
+        </a>
+      </div>
+
       {% endif %}
     </div>
+
   </div>
 </section>
 

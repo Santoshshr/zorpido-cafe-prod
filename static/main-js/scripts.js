@@ -30,618 +30,56 @@ function copyPhone() {
     setTimeout(() => { status.style.display = "none"; }, 2000);
 }
 
-// testimoibials
 
 
 /**
- * ZORPIDO TESTIMONIALS - JavaScript
- * Single Slide Auto-Animation with Smooth Transitions
+ * ZORPIDO hero-section  - JavaScript
  */
+// Parallax effect for floating shapes
+document.addEventListener('mousemove', function (e) {
+  const shapes = document.querySelectorAll('.floating-shape');
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
 
-/**
- * ZORPIDO TESTIMONIALS - ENHANCED JAVASCRIPT
- * Advanced Auto-Animation with Smooth Transitions & Performance Optimization
- */
+  shapes.forEach((shape, index) => {
+    const speed = (index + 1) * 0.02;
+    const x = (mouseX * speed);
+    const y = (mouseY * speed);
 
-(function() {
-  'use strict';
-
-  // Configuration
-  const CONFIG = {
-    autoPlayInterval: 6000,
-    transitionDuration: 900,
-    pauseOnHover: true,
-    easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-    progressUpdateInterval: 16 // ~60fps
-  };
-
-  let currentIndex = 0;
-  let autoPlayTimer = null;
-  let progressInterval = null;
-  let isTransitioning = false;
-  let isPaused = false;
-  let progressStartTime = null;
-
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-  /**
-   * Initialize the testimonial slider
-   */
-  function init() {
-    const slider = document.querySelector('.testimonial-slider');
-    if (!slider) return;
-
-    const slides = document.querySelectorAll('.testimonial-slide');
-    const dots = document.querySelectorAll('.dot');
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
-    const progressFill = document.querySelector('.progress-fill');
-
-    if (slides.length === 0) return;
-
-    // Setup event listeners
-    setupControls(slides, dots, prevBtn, nextBtn);
-    
-    // Setup hover pause
-    if (CONFIG.pauseOnHover) {
-      setupHoverPause(slider);
-    }
-
-    // Add ripple effects to buttons
-    addRippleEffects();
-
-    // Optimize for performance
-    optimizePerformance();
-
-    // Start auto-play
-    startAutoPlay(slides, dots, progressFill);
-
-    // Add entrance animation
-    animateEntrance();
-
-    // Add intersection observer for visibility
-    setupVisibilityObserver(slides, dots, progressFill);
-
-    console.log('%c🎉 Zorpido Testimonials Enhanced - Activated!', 
-      'color: #DC2626; font-size: 16px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);');
-  }
-
-  /**
-   * Setup navigation controls
-   */
-  function setupControls(slides, dots, prevBtn, nextBtn) {
-    // Previous button
-    if (prevBtn) {
-      prevBtn.addEventListener('click', (e) => {
-        if (isTransitioning) return;
-        createClickEffect(e, prevBtn);
-        goToSlide(currentIndex - 1, slides, dots);
-        resetAutoPlay(slides, dots);
-      });
-    }
-
-    // Next button
-    if (nextBtn) {
-      nextBtn.addEventListener('click', (e) => {
-        if (isTransitioning) return;
-        createClickEffect(e, nextBtn);
-        goToSlide(currentIndex + 1, slides, dots);
-        resetAutoPlay(slides, dots);
-      });
-    }
-
-    // Dot navigation
-    dots.forEach((dot, index) => {
-      dot.addEventListener('click', (e) => {
-        if (isTransitioning || index === currentIndex) return;
-        createClickEffect(e, dot);
-        goToSlide(index, slides, dots);
-        resetAutoPlay(slides, dots);
-      });
-
-      // Add hover effect
-      dot.addEventListener('mouseenter', function() {
-        if (index !== currentIndex) {
-          this.style.transform = 'scale(1.3)';
-        }
-      });
-
-      dot.addEventListener('mouseleave', function() {
-        if (index !== currentIndex) {
-          this.style.transform = 'scale(1)';
-        }
-      });
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
-        if (isTransitioning) return;
-        goToSlide(currentIndex - 1, slides, dots);
-        resetAutoPlay(slides, dots);
-      } else if (e.key === 'ArrowRight') {
-        if (isTransitioning) return;
-        goToSlide(currentIndex + 1, slides, dots);
-        resetAutoPlay(slides, dots);
-      }
-    });
-
-    // Touch/Swipe support
-    setupTouchControls(slides, dots);
-  }
-
-  /**
-   * Create click ripple effect
-   */
-  function createClickEffect(e, element) {
-    const ripple = element.querySelector('.btn-ripple') || element.querySelector('.dot-inner');
-    if (ripple) {
-      ripple.style.animation = 'none';
-      void ripple.offsetWidth; // Force reflow
-      ripple.style.animation = 'rippleEffect 0.6s ease';
-    }
-  }
-
-  /**
-   * Setup touch/swipe controls for mobile
-   */
-  function setupTouchControls(slides, dots) {
-    const slider = document.querySelector('.testimonial-slider');
-    if (!slider) return;
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-    let touchStartY = 0;
-    let touchEndY = 0;
-
-    slider.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    slider.addEventListener('touchmove', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      touchEndY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    slider.addEventListener('touchend', (e) => {
-      handleSwipe(slides, dots);
-    }, { passive: true });
-
-    function handleSwipe(slides, dots) {
-      const swipeThreshold = 75;
-      const diffX = touchStartX - touchEndX;
-      const diffY = Math.abs(touchStartY - touchEndY);
-
-      // Only trigger if horizontal swipe is dominant
-      if (Math.abs(diffX) > swipeThreshold && Math.abs(diffX) > diffY * 2) {
-        if (diffX > 0) {
-          // Swiped left - next
-          goToSlide(currentIndex + 1, slides, dots);
-        } else {
-          // Swiped right - previous
-          goToSlide(currentIndex - 1, slides, dots);
-        }
-        resetAutoPlay(slides, dots);
-      }
-    }
-  }
-
-  /**
-   * Go to specific slide with enhanced animation
-   */
-  function goToSlide(index, slides, dots) {
-    if (isTransitioning) return;
-
-    const newIndex = (index + slides.length) % slides.length;
-    
-    if (newIndex === currentIndex) return;
-
-    isTransitioning = true;
-
-    const currentSlide = slides[currentIndex];
-    const nextSlide = slides[newIndex];
-    const direction = newIndex > currentIndex ? 'next' : 'prev';
-
-    // Animate transition
-    animateSlideTransition(currentSlide, nextSlide, direction, () => {
-      currentIndex = newIndex;
-      updateDots(dots);
-      isTransitioning = false;
-      announceSlideChange(currentIndex + 1, slides.length);
-    });
-  }
-
-  /**
-   * Animate slide transition with enhanced effects
-   */
-  function animateSlideTransition(currentSlide, nextSlide, direction, callback) {
-    // Prepare next slide
-    nextSlide.style.transition = 'none';
-    nextSlide.style.filter = 'blur(8px)';
-    
-    if (direction === 'next') {
-      nextSlide.style.transform = 'translateX(150px) scale(0.9)';
+    if (index === 0) {
+      shape.style.transform = `translate(${x}px, ${y}px)`;
+    } else if (index === 1) {
+      shape.style.transform = `translate(${-x * 0.75}px, ${y * 0.75}px)`;
     } else {
-      nextSlide.style.transform = 'translateX(-150px) scale(0.9)';
+      shape.style.transform = `translate(${x * 0.5}px, ${-y * 0.5}px)`;
     }
-    
-    nextSlide.style.opacity = '0';
-    nextSlide.classList.remove('exit-left');
-    nextSlide.classList.add('active');
 
-    // Force reflow
-    void nextSlide.offsetWidth;
+    shape.style.transition = 'transform 0.3s ease-out';
+  });
+});
 
-    // Apply transition
-    nextSlide.style.transition = `all ${CONFIG.transitionDuration}ms ${CONFIG.easing}`;
-
-    // Animate in
-    requestAnimationFrame(() => {
-      nextSlide.style.transform = 'translateX(0) scale(1)';
-      nextSlide.style.opacity = '1';
-      nextSlide.style.filter = 'blur(0)';
-
-      // Animate out current slide
-      currentSlide.style.filter = 'blur(8px)';
-      
-      if (direction === 'next') {
-        currentSlide.style.transform = 'translateX(-150px) scale(0.9)';
-      } else {
-        currentSlide.style.transform = 'translateX(150px) scale(0.9)';
-      }
-      
-      currentSlide.style.opacity = '0';
-    });
-
-    // Clean up
-    setTimeout(() => {
-      currentSlide.classList.remove('active');
-      currentSlide.classList.add('exit-left');
-      currentSlide.style.transition = '';
-      nextSlide.style.transition = '';
-      
-      if (callback) callback();
-    }, CONFIG.transitionDuration);
-  }
-
-  /**
-   * Update active dot with smooth animation
-   */
-  function updateDots(dots) {
-    dots.forEach((dot, index) => {
-      const inner = dot.querySelector('.dot-inner');
-      
-      if (index === currentIndex) {
-        dot.classList.add('active');
-        if (inner) {
-          inner.style.transform = 'scale(1)';
-        }
-      } else {
-        dot.classList.remove('active');
-        if (inner) {
-          inner.style.transform = 'scale(0)';
-        }
-      }
-    });
-  }
-
-  /**
-   * Start auto-play with smooth progress
-   */
-  function startAutoPlay(slides, dots, progressFill) {
-    if (slides.length <= 1 || isPaused) return;
-
-    progressStartTime = Date.now();
-    startSmoothProgress(progressFill);
-
-    autoPlayTimer = setTimeout(() => {
-      if (!isPaused) {
-        goToSlide(currentIndex + 1, slides, dots);
-        startAutoPlay(slides, dots, progressFill);
-      }
-    }, CONFIG.autoPlayInterval);
-  }
-
-  /**
-   * Smooth progress bar animation
-   */
-  function startSmoothProgress(progressFill) {
-    if (!progressFill || isPaused) return;
-
-    stopProgressAnimation();
-
-    let startWidth = 0;
-    progressFill.style.width = '0%';
-
-    progressInterval = setInterval(() => {
-      if (isPaused) return;
-
-      const elapsed = Date.now() - progressStartTime;
-      const progress = Math.min((elapsed / CONFIG.autoPlayInterval) * 100, 100);
-      
-      progressFill.style.width = `${progress}%`;
-
-      if (progress >= 100) {
-        stopProgressAnimation();
-      }
-    }, CONFIG.progressUpdateInterval);
-  }
-
-  /**
-   * Stop progress animation
-   */
-  function stopProgressAnimation() {
-    if (progressInterval) {
-      clearInterval(progressInterval);
-      progressInterval = null;
-    }
-  }
-
-  /**
-   * Stop auto-play
-   */
-  function stopAutoPlay() {
-    if (autoPlayTimer) {
-      clearTimeout(autoPlayTimer);
-      autoPlayTimer = null;
-    }
-    stopProgressAnimation();
-  }
-
-  /**
-   * Reset auto-play
-   */
-  function resetAutoPlay(slides, dots) {
-    stopAutoPlay();
-    const progressFill = document.querySelector('.progress-fill');
-    
-    // Small delay before restarting
-    setTimeout(() => {
-      startAutoPlay(slides, dots, progressFill);
-    }, 100);
-  }
-
-  /**
-   * Setup hover pause with smooth transitions
-   */
-  function setupHoverPause(slider) {
-    const progressFill = document.querySelector('.progress-fill');
-    let pausedProgress = 0;
-
-    slider.addEventListener('mouseenter', () => {
-      isPaused = true;
-      
-      if (progressFill) {
-        pausedProgress = parseFloat(progressFill.style.width) || 0;
-      }
-      
-      stopAutoPlay();
-    });
-
-    slider.addEventListener('mouseleave', () => {
-      isPaused = false;
-      
-      const slides = document.querySelectorAll('.testimonial-slide');
-      const dots = document.querySelectorAll('.dot');
-      
-      // Adjust remaining time based on paused progress
-      const remainingTime = CONFIG.autoPlayInterval * (1 - pausedProgress / 100);
-      progressStartTime = Date.now() - (CONFIG.autoPlayInterval - remainingTime);
-      
-      startAutoPlay(slides, dots, progressFill);
-    });
-  }
-
-  /**
-   * Add ripple effects to interactive elements
-   */
-  function addRippleEffects() {
-    const buttons = document.querySelectorAll('.control-btn');
-    
-    buttons.forEach(button => {
-      button.addEventListener('mousedown', function(e) {
-        const ripple = this.querySelector('.btn-ripple');
-        if (ripple) {
-          ripple.style.animation = 'none';
-          void ripple.offsetWidth;
-          ripple.style.animation = 'rippleEffect 0.6s ease';
-        }
+// Smooth scroll for buttons
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
       });
-    });
-  }
-
-  /**
-   * Optimize performance
-   */
-  function optimizePerformance() {
-    // Use will-change for better performance
-    const slides = document.querySelectorAll('.testimonial-slide');
-    slides.forEach(slide => {
-      slide.style.willChange = 'transform, opacity';
-    });
-
-    // Cleanup will-change after transitions
-    setTimeout(() => {
-      slides.forEach(slide => {
-        slide.style.willChange = 'auto';
-      });
-    }, 2000);
-  }
-
-  /**
-   * Animate entrance of testimonial section
-   */
-  function animateEntrance() {
-    const section = document.querySelector('.zorpido-testimonials');
-    if (!section) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          section.style.opacity = '0';
-          section.style.transform = 'translateY(50px)';
-          
-          requestAnimationFrame(() => {
-            section.style.transition = 'all 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-          });
-
-          // Animate floating quotes with stagger
-          const quotes = document.querySelectorAll('.quote-float');
-          quotes.forEach((quote, index) => {
-            setTimeout(() => {
-              quote.style.opacity = '0';
-              quote.style.transform = 'scale(0.5) rotate(-30deg)';
-              quote.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-              
-              requestAnimationFrame(() => {
-                quote.style.opacity = '0.12';
-                quote.style.transform = 'scale(1) rotate(0deg)';
-              });
-            }, index * 150);
-          });
-
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold: 0.15,
-      rootMargin: '0px 0px -50px 0px'
-    });
-
-    observer.observe(section);
-  }
-
-  /**
-   * Setup visibility observer for pause on hidden
-   */
-  function setupVisibilityObserver(slides, dots, progressFill) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) {
-          isPaused = true;
-          stopAutoPlay();
-        } else if (!isPaused) {
-          startAutoPlay(slides, dots, progressFill);
-        }
-      });
-    }, {
-      threshold: 0.1
-    });
-
-    const section = document.querySelector('.zorpido-testimonials');
-    if (section) {
-      observer.observe(section);
-    }
-  }
-
-  /**
-   * Announce slide changes for accessibility
-   */
-  function announceSlideChange(slideNumber, totalSlides) {
-    const announcement = document.createElement('div');
-    announcement.setAttribute('role', 'status');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.style.position = 'absolute';
-    announcement.style.left = '-10000px';
-    announcement.style.width = '1px';
-    announcement.style.height = '1px';
-    announcement.style.overflow = 'hidden';
-    announcement.textContent = `Showing testimonial ${slideNumber} of ${totalSlides}`;
-    
-    document.body.appendChild(announcement);
-    
-    setTimeout(() => {
-      if (announcement.parentNode) {
-        document.body.removeChild(announcement);
-      }
-    }, 1000);
-  }
-
-  /**
-   * Handle visibility change
-   */
-  document.addEventListener('visibilitychange', () => {
-    const slides = document.querySelectorAll('.testimonial-slide');
-    const dots = document.querySelectorAll('.dot');
-    const progressFill = document.querySelector('.progress-fill');
-
-    if (document.hidden) {
-      isPaused = true;
-      stopAutoPlay();
-    } else {
-      isPaused = false;
-      if (slides.length > 1) {
-        startAutoPlay(slides, dots, progressFill);
-      }
     }
   });
+});
 
-  /**
-   * Smooth scroll to testimonials
-   */
-  window.scrollToTestimonials = function() {
-    const section = document.querySelector('.zorpido-testimonials');
-    if (section) {
-      section.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
-      });
-    }
-  };
-
-  /**
-   * Public API with enhanced methods
-   */
-  window.ZorpidoTestimonials = {
-    next: function() {
-      const slides = document.querySelectorAll('.testimonial-slide');
-      const dots = document.querySelectorAll('.dot');
-      goToSlide(currentIndex + 1, slides, dots);
-      resetAutoPlay(slides, dots);
-    },
-    prev: function() {
-      const slides = document.querySelectorAll('.testimonial-slide');
-      const dots = document.querySelectorAll('.dot');
-      goToSlide(currentIndex - 1, slides, dots);
-      resetAutoPlay(slides, dots);
-    },
-    goTo: function(index) {
-      const slides = document.querySelectorAll('.testimonial-slide');
-      const dots = document.querySelectorAll('.dot');
-      if (index >= 0 && index < slides.length) {
-        goToSlide(index, slides, dots);
-        resetAutoPlay(slides, dots);
-      }
-    },
-    pause: function() {
-      isPaused = true;
-      stopAutoPlay();
-    },
-    play: function() {
-      isPaused = false;
-      const slides = document.querySelectorAll('.testimonial-slide');
-      const dots = document.querySelectorAll('.dot');
-      const progressFill = document.querySelector('.progress-fill');
-      startAutoPlay(slides, dots, progressFill);
-    },
-    getCurrentIndex: function() {
-      return currentIndex;
-    },
-    getTotalSlides: function() {
-      return document.querySelectorAll('.testimonial-slide').length;
-    }
-  };
-
-})();
+// Scroll fade effect
+window.addEventListener('scroll', function () {
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (scrollIndicator) {
+    const scrollY = window.scrollY;
+    scrollIndicator.style.opacity = Math.max(0, 1 - scrollY / 300);
+  }
+});
 
 
 
@@ -1148,374 +586,6 @@ function copyPhone() {
   };
 
 })();
-
-
-
-
-// why choose us section 
-// (function() {
-//   'use strict';
-//   if (document.readyState === 'loading') {
-//     document.addEventListener('DOMContentLoaded', init);
-//   } else {
-//     init();
-//   }
-//   function init() {
-//     const section = document.querySelector('.zorpido-why-choose');
-//     if (!section) return;
-
-//     initScrollAnimations();
-    
-//     initCardInteractions();
-    
-//     initStatsCounter();
-    
-//     initParallaxEffect();
-    
-//     initCardTilt();
-    
-//     initEntranceAnimation();
-
-//     console.log('%c🌟 Zorpido Why Choose Section Activated!', 
-//       'color: #DC2626; font-size: 14px; font-weight: bold;');
-//   }
-//   function initScrollAnimations() {
-//     if (typeof AOS !== 'undefined') {
-//       AOS.init({
-//         duration: 600,
-//         easing: 'ease-out-cubic',
-//         once: true,
-//         offset: 100
-//       });
-//     } else {
-//       const cards = document.querySelectorAll('.feature-card');
-      
-//       if ('IntersectionObserver' in window) {
-//         const observer = new IntersectionObserver((entries) => {
-//           entries.forEach(entry => {
-//             if (entry.isIntersecting) {
-//               entry.target.style.opacity = '1';
-//               entry.target.style.transform = 'translateY(0)';
-//             }
-//           });
-//         }, {
-//           threshold: 0.1,
-//           rootMargin: '0px 0px -50px 0px'
-//         });
-
-//         cards.forEach((card, index) => {
-//           card.style.opacity = '0';
-//           card.style.transform = 'translateY(50px)';
-//           card.style.transition = `all 0.6s ease ${index * 0.1}s`;
-//           observer.observe(card);
-//         });
-//       }
-//     }
-//   }
-//   function initCardInteractions() {
-//     const cards = document.querySelectorAll('.feature-card');
-    
-//     cards.forEach(card => {
-//       card.addEventListener('click', function(e) {
-//         createRipple(e, this);
-//       });
-
-//       card.addEventListener('mouseenter', function() {
-//         this.style.zIndex = '10';
-//       });
-
-//       card.addEventListener('mouseleave', function() {
-//         this.style.zIndex = '1';
-//       });
-//     });
-//   }
-//   function createRipple(event, element) {
-//     const card = element.querySelector('.card-inner');
-//     const ripple = document.createElement('span');
-//     const rect = card.getBoundingClientRect();
-//     const size = Math.max(rect.width, rect.height);
-//     const x = event.clientX - rect.left - size / 2;
-//     const y = event.clientY - rect.top - size / 2;
-
-//     ripple.style.width = ripple.style.height = size + 'px';
-//     ripple.style.left = x + 'px';
-//     ripple.style.top = y + 'px';
-//     ripple.style.position = 'absolute';
-//     ripple.style.borderRadius = '50%';
-//     ripple.style.background = 'rgba(220, 38, 38, 0.3)';
-//     ripple.style.transform = 'scale(0)';
-//     ripple.style.animation = 'ripple-effect 0.6s ease-out';
-//     ripple.style.pointerEvents = 'none';
-
-//     const style = document.createElement('style');
-//     style.textContent = `
-//       @keyframes ripple-effect {
-//         to {
-//           transform: scale(2);
-//           opacity: 0;
-//         }
-//       }
-//     `;
-//     if (!document.querySelector('style[data-ripple]')) {
-//       style.setAttribute('data-ripple', 'true');
-//       document.head.appendChild(style);
-//     }
-
-//     card.style.position = 'relative';
-//     card.style.overflow = 'hidden';
-//     card.appendChild(ripple);
-
-//     setTimeout(() => {
-//       ripple.remove();
-//     }, 600);
-//   }
-
-//   function initStatsCounter() {
-//     const stats = document.querySelectorAll('.stat-number');
-    
-//     const observer = new IntersectionObserver((entries) => {
-//       entries.forEach(entry => {
-//         if (entry.isIntersecting) {
-//           const target = entry.target;
-//           const text = target.textContent;
-//           const hasPlus = text.includes('+');
-//           const hasStar = text.includes('★');
-//           const number = parseFloat(text.replace(/[^\d.]/g, ''));
-          
-//           animateCounter(target, 0, number, 2000, hasPlus, hasStar);
-//           observer.unobserve(target);
-//         }
-//       });
-//     }, { threshold: 0.5 });
-
-//     stats.forEach(stat => observer.observe(stat));
-//   }
-//   function animateCounter(element, start, end, duration, hasPlus, hasStar) {
-//     const startTime = performance.now();
-    
-//     function update(currentTime) {
-//       const elapsed = currentTime - startTime;
-//       const progress = Math.min(elapsed / duration, 1);
-    
-//       const easeOutQuad = progress * (2 - progress);
-//       const current = start + (end - start) * easeOutQuad;
-      
-//       let displayValue = Math.floor(current);
-      
-//       if (end >= 1000) {
-//         displayValue = (current / 1000).toFixed(1) + 'K';
-//       } else if (hasStar) {
-//         displayValue = current.toFixed(1);
-//       }
-      
-//       element.textContent = displayValue + (hasPlus ? '+' : '') + (hasStar ? '★' : '');
-      
-//       if (progress < 1) {
-//         requestAnimationFrame(update);
-//       }
-//     }
-    
-//     requestAnimationFrame(update);
-//   }
-
-//   function initParallaxEffect() {
-//     const floatingElements = document.querySelectorAll('.float-element');
-    
-//     if (floatingElements.length === 0) return;
-
-//     window.addEventListener('scroll', () => {
-//       const scrolled = window.pageYOffset;
-//       const section = document.querySelector('.zorpido-why-choose');
-      
-//       if (!section) return;
-      
-//       const sectionTop = section.offsetTop;
-//       const sectionHeight = section.offsetHeight;
-      
-//       if (scrolled > sectionTop - window.innerHeight && 
-//           scrolled < sectionTop + sectionHeight) {
-        
-//         floatingElements.forEach((element, index) => {
-//           const speed = 0.5 + (index * 0.1);
-//           const yPos = (scrolled - sectionTop) * speed;
-//           element.style.transform = `translateY(${yPos}px)`;
-//         });
-//       }
-//     }, { passive: true });
-//   }
-//   function initCardTilt() {
-//     const cards = document.querySelectorAll('.feature-card');
-    
-//     cards.forEach(card => {
-//       card.addEventListener('mousemove', function(e) {
-//         const rect = this.getBoundingClientRect();
-//         const x = e.clientX - rect.left;
-//         const y = e.clientY - rect.top;
-        
-//         const centerX = rect.width / 2;
-//         const centerY = rect.height / 2;
-        
-//         const rotateX = (y - centerY) / 15;
-//         const rotateY = (centerX - x) / 15;
-        
-//         const cardInner = this.querySelector('.card-inner');
-//         cardInner.style.transform = `
-//           perspective(1000px) 
-//           rotateX(${rotateX}deg) 
-//           rotateY(${rotateY}deg) 
-//           translateY(-10px)
-//         `;
-//       });
-      
-//       card.addEventListener('mouseleave', function() {
-//         const cardInner = this.querySelector('.card-inner');
-//         cardInner.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
-//       });
-//     });
-//   }
-//   function initEntranceAnimation() {
-//     const section = document.querySelector('.zorpido-why-choose');
-//     if (!section) return;
-
-//     const observer = new IntersectionObserver((entries) => {
-//       entries.forEach(entry => {
-//         if (entry.isIntersecting) {
-//           const headerBadge = section.querySelector('.header-badge');
-//           const sectionTitle = section.querySelector('.section-title');
-//           const sectionSubtitle = section.querySelector('.section-subtitle');
-          
-//           if (headerBadge) {
-//             headerBadge.style.opacity = '0';
-//             headerBadge.style.transform = 'scale(0) rotate(-180deg)';
-            
-//             setTimeout(() => {
-//               headerBadge.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-//               headerBadge.style.opacity = '1';
-//               headerBadge.style.transform = 'scale(1) rotate(0deg)';
-//             }, 100);
-//           }
-          
-//           if (sectionTitle) {
-//             sectionTitle.style.opacity = '0';
-//             sectionTitle.style.transform = 'translateY(30px)';
-            
-//             setTimeout(() => {
-//               sectionTitle.style.transition = 'all 0.8s ease-out';
-//               sectionTitle.style.opacity = '1';
-//               sectionTitle.style.transform = 'translateY(0)';
-//             }, 300);
-//           }
-          
-//           if (sectionSubtitle) {
-//             sectionSubtitle.style.opacity = '0';
-//             sectionSubtitle.style.transform = 'translateY(30px)';
-            
-//             setTimeout(() => {
-//               sectionSubtitle.style.transition = 'all 0.8s ease-out';
-//               sectionSubtitle.style.opacity = '1';
-//               sectionSubtitle.style.transform = 'translateY(0)';
-//             }, 500);
-//           }
-          
-//           observer.unobserve(entry.target);
-//         }
-//       });
-//     }, { threshold: 0.2 });
-
-//     observer.observe(section);
-//   }
-//   function initSmoothScroll() {
-//     const ctaButtons = document.querySelectorAll('.btn-primary-cta, .btn-secondary-cta');
-    
-//     ctaButtons.forEach(button => {
-//       button.addEventListener('click', function(e) {
-//         const href = this.getAttribute('href');
-        
-//         if (href && href.startsWith('#')) {
-//           e.preventDefault();
-//           const target = document.querySelector(href);
-          
-//           if (target) {
-//             target.scrollIntoView({
-//               behavior: 'smooth',
-//               block: 'start'
-//             });
-//           }
-//         }
-//       });
-//     });
-//   }
-//   function initKeyboardNavigation() {
-//     const cards = document.querySelectorAll('.feature-card');
-//     let currentFocus = -1;
-
-//     document.addEventListener('keydown', (e) => {
-//       if (e.key === 'Tab') {
-//         currentFocus = (currentFocus + 1) % cards.length;
-//         cards[currentFocus]?.focus();
-//       }
-//     });
-
-//     cards.forEach((card, index) => {
-//       card.setAttribute('tabindex', '0');
-      
-//       card.addEventListener('keydown', (e) => {
-//         if (e.key === 'Enter' || e.key === ' ') {
-//           e.preventDefault();
-//           card.click();
-//         }
-//       });
-//     });
-//   }
-//   function monitorPerformance() {
-//     if ('PerformanceObserver' in window) {
-//       const observer = new PerformanceObserver((list) => {
-//         for (const entry of list.getEntries()) {
-//           if (entry.duration > 50) {
-//             console.warn('Slow animation detected:', entry);
-//           }
-//         }
-//       });
-      
-//       observer.observe({ entryTypes: ['measure'] });
-//     }
-//   }
-
-//   initSmoothScroll();
-//   initKeyboardNavigation();
-//   monitorPerformance();
-
-//   window.ZorpidoWhyChoose = {
-//     animateCards: function() {
-//       initScrollAnimations();
-//     },
-//     resetAnimations: function() {
-//       const cards = document.querySelectorAll('.feature-card');
-//       cards.forEach(card => {
-//         card.style.opacity = '0';
-//         card.style.transform = 'translateY(50px)';
-//       });
-//       initScrollAnimations();
-//     },
-//     highlightCard: function(index) {
-//       const cards = document.querySelectorAll('.feature-card');
-//       if (cards[index]) {
-//         cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
-//         cards[index].style.animation = 'pulse 1s ease-in-out';
-//       }
-//     }
-//   };
-
-//   let resizeTimer;
-//   window.addEventListener('resize', () => {
-//     clearTimeout(resizeTimer);
-//     resizeTimer = setTimeout(() => {
-//       console.log('Window resized - recalculating positions');
-//     }, 250);
-//   });
-
-// })();
-
 
 
 
@@ -2129,3 +1199,362 @@ function copyPhone() {
   };
 
 })();
+
+
+
+
+
+/* ===============================================
+   TESTIMONIALS SECTION - JAVASCRIPT
+   Auto-sliding, Manual Controls, Smooth Animations
+   =============================================== */
+
+(function () {
+  'use strict';
+
+  // Wait for DOM to be fully loaded
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // Get all necessary elements
+    const slider = document.querySelector('.testimonial-slider');
+    const cards = document.querySelectorAll('.testimonial-card');
+    const dots = document.querySelectorAll('.slider-dots .dot');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    const progressFill = document.querySelector('.progress-fill');
+
+    // Check if testimonials exist
+    if (!slider || cards.length === 0) {
+      return;
+    }
+
+    // Configuration
+    let currentIndex = 0;
+    let autoSlideInterval;
+    const autoSlideDelay = 5000; // 5 seconds per slide
+    let isTransitioning = false;
+
+    /* -----------------
+       Initialize Slider
+       ----------------- */
+    function init() {
+      // Set first card as active
+      showSlide(0);
+
+      // Start auto-sliding
+      startAutoSlide();
+
+      // Add event listeners
+      attachEventListeners();
+    }
+
+    /* -----------------
+       Show Specific Slide
+       ----------------- */
+    function showSlide(index, direction = 'next') {
+      // Prevent rapid clicking
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      // Remove all active classes
+      cards.forEach(card => {
+        card.classList.remove('active', 'prev');
+      });
+
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+      });
+
+      // Add prev class to current card for exit animation
+      if (direction === 'prev') {
+        cards[currentIndex].classList.add('prev');
+      }
+
+      // Update index
+      currentIndex = index;
+
+      // Ensure index is within bounds
+      if (currentIndex >= cards.length) {
+        currentIndex = 0;
+      } else if (currentIndex < 0) {
+        currentIndex = cards.length - 1;
+      }
+
+      // Add active class to new card
+      setTimeout(() => {
+        cards[currentIndex].classList.add('active');
+        dots[currentIndex].classList.add('active');
+        isTransitioning = false;
+      }, 50);
+
+      // Reset progress bar
+      resetProgress();
+    }
+
+    /* -----------------
+       Next Slide
+       ----------------- */
+    function nextSlide() {
+      const nextIndex = (currentIndex + 1) % cards.length;
+      showSlide(nextIndex, 'next');
+    }
+
+    /* -----------------
+       Previous Slide
+       ----------------- */
+    function prevSlide() {
+      const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
+      showSlide(prevIndex, 'prev');
+    }
+
+    /* -----------------
+       Go to Specific Slide
+       ----------------- */
+    function goToSlide(index) {
+      if (index === currentIndex) return;
+
+      const direction = index > currentIndex ? 'next' : 'prev';
+      showSlide(index, direction);
+    }
+
+    /* -----------------
+       Auto-Slide Functions
+       ----------------- */
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        nextSlide();
+      }, autoSlideDelay);
+    }
+
+    function stopAutoSlide() {
+      clearInterval(autoSlideInterval);
+    }
+
+    function resetAutoSlide() {
+      stopAutoSlide();
+      startAutoSlide();
+    }
+
+    /* -----------------
+       Progress Bar Animation
+       ----------------- */
+    function resetProgress() {
+      if (!progressFill) return;
+
+      // Reset animation
+      progressFill.style.animation = 'none';
+      progressFill.offsetHeight; // Trigger reflow
+      progressFill.style.animation = null;
+    }
+
+    /* -----------------
+       Event Listeners
+       ----------------- */
+    function attachEventListeners() {
+
+      // Previous button
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          prevSlide();
+          resetAutoSlide();
+        });
+      }
+
+      // Next button
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          nextSlide();
+          resetAutoSlide();
+        });
+      }
+
+      // Dot navigation
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', function () {
+          goToSlide(index);
+          resetAutoSlide();
+        });
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') {
+          prevSlide();
+          resetAutoSlide();
+        } else if (e.key === 'ArrowRight') {
+          nextSlide();
+          resetAutoSlide();
+        }
+      });
+
+      // Pause on hover
+      if (slider) {
+        slider.addEventListener('mouseenter', function () {
+          stopAutoSlide();
+        });
+
+        slider.addEventListener('mouseleave', function () {
+          startAutoSlide();
+        });
+      }
+
+      // Touch/Swipe support for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      if (slider) {
+        slider.addEventListener('touchstart', function (e) {
+          touchStartX = e.changedTouches[0].screenX;
+          stopAutoSlide();
+        }, { passive: true });
+
+        slider.addEventListener('touchend', function (e) {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+          startAutoSlide();
+        }, { passive: true });
+      }
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swipe left - next slide
+            nextSlide();
+          } else {
+            // Swipe right - previous slide
+            prevSlide();
+          }
+        }
+      }
+
+      // Pause auto-slide when page is not visible
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          stopAutoSlide();
+        } else {
+          startAutoSlide();
+        }
+      });
+    }
+
+    /* -----------------
+       Add Ripple Effect to Buttons
+       ----------------- */
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const ripple = document.createElement('span');
+      const diameter = Math.max(button.clientWidth, button.clientHeight);
+      const radius = diameter / 2;
+
+      ripple.style.width = ripple.style.height = `${diameter}px`;
+      ripple.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+      ripple.style.top = `${event.clientY - button.offsetTop - radius}px`;
+      ripple.classList.add('ripple');
+
+      const existingRipple = button.querySelector('.ripple');
+      if (existingRipple) {
+        existingRipple.remove();
+      }
+
+      button.appendChild(ripple);
+
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    }
+
+    // Add ripple effect to navigation buttons
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(button => {
+      button.addEventListener('click', createRipple);
+    });
+
+    /* -----------------
+       Smooth Scroll for Share Button
+       ----------------- */
+    const shareBtn = document.querySelector('.btn-share');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      });
+    }
+
+    /* -----------------
+       Initialize
+       ----------------- */
+    init();
+
+    // Accessibility: Announce slide changes to screen readers
+    function announceSlideChange() {
+      const announcement = document.createElement('div');
+      announcement.setAttribute('role', 'status');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.setAttribute('aria-atomic', 'true');
+      announcement.className = 'sr-only';
+      announcement.style.position = 'absolute';
+      announcement.style.left = '-10000px';
+      announcement.style.width = '1px';
+      announcement.style.height = '1px';
+      announcement.style.overflow = 'hidden';
+
+      const currentCard = cards[currentIndex];
+      const customerName = currentCard.querySelector('.customer-name');
+
+      if (customerName) {
+        announcement.textContent = `Showing testimonial ${currentIndex + 1} of ${cards.length} from ${customerName.textContent}`;
+      }
+
+      document.body.appendChild(announcement);
+
+      setTimeout(() => {
+        announcement.remove();
+      }, 1000);
+    }
+
+    // Update showSlide to include accessibility announcement
+    const originalShowSlide = showSlide;
+    showSlide = function (index, direction) {
+      originalShowSlide(index, direction);
+      announceSlideChange();
+    };
+
+  });
+
+})();
+
+/* -----------------
+   Additional CSS for Ripple Effect
+   Add this to your CSS if not already present
+   ----------------- */
+/*
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple-animation 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+*/
