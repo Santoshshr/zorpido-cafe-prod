@@ -92,17 +92,22 @@ WSGI_APPLICATION = 'zorpido_config.wsgi.application'
 
 # ------------------------------
 # DATABASES
-# Require a DATABASE_URL environment variable pointing to a PostgreSQL database.
 # ------------------------------
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if not DATABASE_URL:
-    raise ImproperlyConfigured(
-        'DATABASE_URL environment variable is required and must point to a Postgres database.'
-    )
+DATABASE_URL = config('DATABASE_URL', default='')  # read from .env or environment
 
-DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600),
-}
+if DATABASE_URL:
+    # Production / PostgreSQL
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    }
+else:
+    # Development fallback: SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 
