@@ -5,10 +5,21 @@ Extends Django's AbstractUser to include customer-specific fields
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from cloudinary.models import CloudinaryField
 from decimal import Decimal
 from django.core.validators import RegexValidator
 from utils.supabase_storage import upload_file
+
+# Cloudinary is optional for local development. Provide a fallback field
+# so importing models does not fail when `cloudinary` package is not installed.
+try:
+    from cloudinary.models import CloudinaryField
+except Exception:
+    class CloudinaryField(models.URLField):
+        def __init__(self, *args, **kwargs):
+            kwargs.setdefault('blank', True)
+            kwargs.setdefault('null', True)
+            kwargs.setdefault('max_length', 500)
+            super().__init__(*args, **kwargs)
 
 class User(AbstractUser):
     """

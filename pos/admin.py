@@ -2,11 +2,9 @@ from django.contrib import admin
 from django.db import transaction
 from django.utils import timezone
 
-# Removed imports: Expense, ExpenseCategory (Expense feature removed)
 from .models import Payable, Seller, Register, Expense, ExpenseCategory
 
 
-# REMOVED: @admin.register(Expense) / ExpenseAdmin (Expense feature removed)
 @admin.register(ExpenseCategory)
 class ExpenseCategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'slug', 'created_at')
@@ -30,14 +28,11 @@ def settle_payables(modeladmin, request, queryset):
             p.status = 'settled'
             p.updated_at = timezone.now()
             p.save()
-            # related_expense reference removed: Expense feature removed
 
-            # Try to credit current open register (cash) when settling
             try:
                 reg = Register.objects.filter(is_open=True).order_by('-opened_at').first()
                 if reg:
                     reg.cash_total = (reg.cash_total or 0) + (p.amount or 0)
-                    # Recalculate closing using recalculate_totals for consistency
                     reg.recalculate_totals()
             except Exception:
                 pass

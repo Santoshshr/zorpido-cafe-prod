@@ -101,7 +101,7 @@ Menu Section
         <div class="menu-card-enhanced">
           <div class="card-image-container">
             {% if item.image %}
-            <img src="{{ item.image.url }}" class="menu-image" alt="{{ item.name }}">
+            <img src="{{ item.image|media_url }}" class="menu-image" alt="{{ item.name }}">
             {% else %}
             <div class="menu-placeholder">
               <i class="bi bi-image-fill"></i>

@@ -57,7 +57,7 @@
                 <div class="gallery-card">
                     <div class="image-wrapper">
                             {% if image.image %}
-                            <img src="{{ image.image.url }}" 
+                            <img src="{{ image.image|media_url }}" 
                                 class="gallery-image" 
                                 alt="{{ image.title }}"
                              loading="lazy"
@@ -100,7 +100,7 @@
                         </div>
                         <div class="modal-body text-center p-0">
                             {% if image.image %}
-                            <img src="{{ image.image.url }}" class="img-fluid rounded" alt="{{ image.title }}">
+                            <img src="{{ image.image|media_url }}" class="img-fluid rounded" alt="{{ image.title }}">
                             {% endif %}
                         </div>
                     </div>

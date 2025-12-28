@@ -13,7 +13,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
-	# Provide a file upload in the admin; `image` is now a CloudinaryField.
 	class MenuItemAdminForm(forms.ModelForm):
 		image_upload = forms.FileField(required=False, label='Upload Image')
 
@@ -31,8 +30,6 @@ class MenuItemAdmin(admin.ModelAdmin):
 
 	def image_preview(self, obj):
 		if obj and getattr(obj, 'image'):
-			# Support both CloudinaryField (object with `.url`) and
-			# legacy string URLs stored in the database.
 			url = None
 			try:
 				url = obj.image.url

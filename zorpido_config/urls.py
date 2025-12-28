@@ -20,7 +20,8 @@ from django.core.files.storage import default_storage
 # storage (typically local development). When using Cloudinary the media
 # URLs are served by Cloudinary CDN and Django should not attempt to
 # expose `MEDIA_URL` via static() in production.
-if settings.DEBUG or getattr(settings, 'DEFAULT_FILE_STORAGE', '').startswith('django'):
+if settings.DEBUG:
+    # During development only: serve static and media from Django.
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

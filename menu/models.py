@@ -56,9 +56,6 @@ class MenuItem(models.Model):
         if file_name is None:
             file_name = getattr(file_obj, 'name', 'menu/unnamed')
         url = upload_file(file_obj, file_name)
-        # Keep behavior compatible: upload_file returns default_storage.url()
-        # which for Cloudinary will be a full Cloudinary URL. Assigning that
-        # to the CloudinaryField keeps templates working.
         self.image = url
         self.save(update_fields=['image'])
     

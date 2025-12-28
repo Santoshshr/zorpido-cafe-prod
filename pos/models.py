@@ -64,13 +64,6 @@ class Register(models.Model):
         self.closing_balance = (self.opening_balance + cash + credit + qr)
         self.save()
 
-
-# REMOVED: Expense model (tracked daily expenses with categories and payment status)
-# REMOVED: ExpenseCategory model (classified expenses by type)
-# Both models removed entirely from the system
-# Database: migration will drop pos_expense and pos_expensecategory tables
-
-
 class Payable(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -131,18 +124,14 @@ class Seller(models.Model):
         return self.name
 
     def total_purchases(self):
-        # total_purchases: now returns 0 (Expense feature removed)
-        # Historical purchases tracked via Payable model if needed
         return Decimal('0.00')
 
     def total_payable(self):
         from django.db.models import Sum
-        # Sum remaining_amount on pending payables
         s = self.payables.filter(status='pending').aggregate(total=Sum('remaining_amount'))['total'] or Decimal('0.00')
         return s
 
     def total_paid(self):
-        # Total paid can be computed as total_purchases - total_payable
         try:
             return (self.total_purchases() or Decimal('0.00')) - (self.total_payable() or Decimal('0.00'))
         except Exception:

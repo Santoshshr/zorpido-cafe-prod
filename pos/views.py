@@ -37,10 +37,6 @@ from .models import Seller
 from .models import Expense, ExpenseCategory
 from .forms import ExpenseForm, ExpenseCategoryForm
 from orders.models import Order, OrderItem
-# Removed imports: Expense, ExpenseCategory (Expense feature removed)
-# Attendance feature removed: Staff/Shift/Attendance models no longer imported
-
-
 def _get_active_register():
     return Register.objects.filter(is_open=True).order_by('-opened_at').first()
 
@@ -55,7 +51,6 @@ def _require_open_register_json():
 
 def is_staff_or_admin(user):
     """Check if user is staff/admin"""
-    # Accept Django staff/superuser flags as well as legacy user_type == 'staff'
     return bool(
         user and user.is_authenticated and (
             getattr(user, 'user_type', None) == 'staff'
@@ -249,7 +244,6 @@ def export_pos_overview_pdf(request):
     a date range. If omitted, defaults to today.
     """
     try:
-        # Import reportlab on demand so the app still loads if the package is missing
         from reportlab.lib.pagesizes import A4
         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -283,7 +277,6 @@ def export_pos_overview_pdf(request):
     sales_agg = orders_qs.aggregate(total=Sum('paid_amount'))
     total_sales = sales_agg['total'] or Decimal('0.00')
 
-    # Expense feature removed: no expenses to include in overview PDF
     total_expenses = Decimal('0.00')
 
     # Credit transactions: given (add) / recovered (deduct)
@@ -382,7 +375,6 @@ def export_pos_overview_pdf(request):
     story.append(itbl)
     story.append(Spacer(1, 12))
 
-    # Expense details removed (Expense feature deleted)
 
     # Footer note (cafe name + timestamp)
     story.append(PageBreak())
@@ -837,7 +829,6 @@ def expenses_by_category(request):
     return render(request, 'pos/expenses/categories_list.html', {'totals': totals, 'summary': totals_summary})
 
 
-# REMOVED: expenses_by_category view (Expense feature removed)
 
 @login_required
 @user_passes_test(is_staff_or_admin)
@@ -871,20 +862,15 @@ def api_overview_data(request):
     orders_qs = Order.objects.filter(status='completed', completed_at__gte=start_dt, completed_at__lte=end_dt)
     sales_total = orders_qs.aggregate(total=Sum('paid_amount'))['total'] or Decimal('0.00')
 
-    # Expense feature removed: no expense totals available
     expenses_total = Decimal('0.00')
 
-    # Receivables (customer credit balances)
     receivables = User.objects.filter(user_type='customer').aggregate(total=Sum('credit_balance'))['total'] or Decimal('0.00')
 
-    # Payables - try common purchase models, fallback to zero
-    # Outstanding payables from Payable model
     try:
         payables_total = Payable.objects.filter(status='pending').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
     except Exception:
         payables_total = Decimal('0.00')
 
-    # Active customers (customers with at least one completed order in range)
     active_customers = User.objects.filter(user_type='customer', orders__status='completed', orders__completed_at__gte=start_dt, orders__completed_at__lte=end_dt).distinct().count()
 
     # Inventory value
@@ -897,7 +883,6 @@ def api_overview_data(request):
         except Exception:
             pass
 
-    # Build daily series for chart
     labels = []
     sales_data = []
     cur = start_date
@@ -1064,8 +1049,6 @@ def update_stock(request, item_id):
             else:
                 return JsonResponse({'success': False, 'error': 'Invalid availability value'}, status=400)
 
-        # Ensure final save
-        # Accept price and purchase_price updates (selling and cost)
         try:
             if 'purchase_price' in data:
                 from decimal import Decimal, InvalidOperation
@@ -1321,7 +1304,6 @@ def pay_seller_payable(request, seller_id):
                     last_remaining = p.remaining_amount
                     last_settled = (p.status == 'settled')
 
-            # Update open register totals if payment was cash/qr
             try:
                 open_reg = Register.objects.filter(is_open=True).order_by('-opened_at').first()
                 if open_reg and applied > Decimal('0.00'):

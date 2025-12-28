@@ -26,7 +26,6 @@ class LoyaltyTransaction(models.Model):
     points = models.IntegerField()
     description = models.CharField(max_length=255)
     
-    # Related order (if applicable)
     order = models.ForeignKey(
         'orders.Order',
         on_delete=models.SET_NULL,

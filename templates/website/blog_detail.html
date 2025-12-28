@@ -39,7 +39,7 @@
         {% if post.featured_image %}
         <div class="article-featured-image">
             {% if post.featured_image %}
-            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+            <img src="{{ post.featured_image|media_url }}" alt="{{ post.title }}">
             {% endif %}
         </div>
         {% endif %}

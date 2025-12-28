@@ -8,7 +8,6 @@ def menu_list(request):
     Cigarettes and Drinks categories are shown via separate pages and an age
     confirmation flow handled on the frontend.
     """
-    # Exclude age-restricted categories by slug. These were updated to new slugs
     exclude_slugs = ['ciarettees', 'alcoholic-drinks', 'bottled-and-ice-cream']
     categories = Category.objects.filter(is_active=True).exclude(slug__in=exclude_slugs).prefetch_related('items')
     context = {'categories': categories}
@@ -23,9 +22,6 @@ def special_list(request, kind):
     subsequent visits in the same browser session will be allowed.
     """
     kind = kind.lower()
-    # Map incoming "kind" (used by frontend routes/buttons) to actual category slug
-    # We keep the frontend kinds (cigarettes/drinks) for compatibility, but map to
-    # the new category slugs created by the data migration.
     slug_map = {
         'cigarettes': 'ciarettees',
         'drinks': 'alcoholic-drinks'
@@ -33,14 +29,10 @@ def special_list(request, kind):
     if kind not in slug_map:
         return redirect('menu:list')
 
-    # If frontend passes age_confirm=1, remember in session
     if request.GET.get('age_confirm') == '1':
         request.session[f'age_verified_{kind}'] = True
 
-    # If session not verified, redirect back to menu list (frontend should
-    # normally open this page after confirming age via modal)
     if not request.session.get(f'age_verified_{kind}'):
-        # Redirecting to menu list is a safe fallback.
         return redirect('menu:list')
 
     slug = slug_map[kind]

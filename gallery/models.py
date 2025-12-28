@@ -19,23 +19,18 @@ class GalleryImage(models.Model):
 	)
 
 	title = models.CharField(max_length=200, blank=True)
-	# Store image in Cloudinary
 	image = CloudinaryField('image', null=True, blank=True)
 
 	def set_image_from_file(self, file_obj, file_name: str = None):
 		if file_name is None:
 			file_name = getattr(file_obj, 'name', 'gallery/unnamed')
 		url = upload_file(file_obj, file_name)
-		# Keep compatibility: upload_file returns a public URL from
-		# `default_storage`; assign it so existing templates continue to work.
 		self.image = url
 		self.save(update_fields=['image'])
 	caption = models.TextField(blank=True)
 	category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
 	is_active = models.BooleanField(default=True)
-	# Marks images that should appear in the homepage "Zorpido's Glimpses" section
 	is_glimpses = models.BooleanField(default=False)
-	# New field: mark images that should appear in the homepage "Zorpido's Glimpses" section
 	is_zorpido_glimpses = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 

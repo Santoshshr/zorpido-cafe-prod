@@ -191,7 +191,7 @@
                 <div class="image-container">
                 <div class="image-overlay"></div>
                 {% if img.image %}
-                <img src="{{ img.image.url }}" alt="{{ img.title }}" class="featured-image">
+                <img src="{{ img.image|media_url }}" alt="{{ img.title }}" class="featured-image">
                 {% endif %}
                 
                 {% if img.title or img.description %}
@@ -226,7 +226,7 @@
                     data-index="{{ forloop.counter0 }}"
                     aria-label="Go to slide {{ forloop.counter }}">
               {% if img.image %}
-              <img src="{{ img.image.url }}" alt="{{ img.title }}">
+              <img src="{{ img.image|media_url }}" alt="{{ img.title }}">
               {% endif %}
               <div class="thumbnail-overlay"></div>
             </button>
@@ -603,7 +603,7 @@
           <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card menu-card glass-card">
                 {% if featured.menu_item.image %}
-                <img src="{{ featured.menu_item.image.url }}" class="card-img-top" alt="{{ featured.menu_item.name }}">
+                <img src="{{ featured.menu_item.image|media_url }}" class="card-img-top" alt="{{ featured.menu_item.name }}">
               {% else %}
                 <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400" class="card-img-top" alt="{{ featured.menu_item.name }}">
               {% endif %}
