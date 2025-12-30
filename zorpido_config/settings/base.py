@@ -4,9 +4,10 @@ try:
     from dotenv import load_dotenv
     load_dotenv()  # load .env early so environment variables are available
 except Exception:
-    # If python-dotenv is not installed, decouple or direct envs should still work
+    # If python-dotenv is not installed, direct envs should still work
     pass
 
+# BASE_DIR is the project root
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # In development a default may be present; in production the secret must be
@@ -87,7 +88,42 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
+# Defaults for where collectstatic will place files and where uploaded media will live.
+# Local settings will override these for developer convenience.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # If this project uses a custom user model in `users` app, declare it here
 AUTH_USER_MODEL = 'users.User'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '',  # will be set below so imports can override
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+# Ensure a logs directory exists and set a sensible default filename for the file handler.
+try:
+    LOGS_DIR = BASE_DIR / 'logs'
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    if not LOGGING['handlers']['file'].get('filename'):
+        LOGGING['handlers']['file']['filename'] = str(LOGS_DIR / 'errors.log')
+except Exception:
+    # If directory creation fails for any reason, fall back to using STDOUT handled elsewhere.
+    pass

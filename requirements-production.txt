@@ -1,0 +1,13 @@
+# Minimal production requirements for deployment on shared hosting
+Django==5.0.1
+psycopg2-binary==2.9.9
+mysqlclient==2.1.1
+dj-database-url==1.1.0
+python-dotenv==1.0.0
+whitenoise==6.6.0
+gunicorn==21.2.0
+pillow==10.2.0
+django-cloudinary-storage==0.3.0
+cloudinary==1.44.1
+
+# Add any app-specific packages from requirements.txt if needed
