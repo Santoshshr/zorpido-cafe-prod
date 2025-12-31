@@ -17,7 +17,7 @@ django-cors-headers==4.3.1
 django-debug-toolbar==4.3.0
 django-widget-tweaks==1.5.0
 freetype-py==2.3.0
-fsspec==2025.12.0
+fsspec==2023.6.0
 gunicorn==21.2.0
 h11==0.16.0
 h2==4.3.0
