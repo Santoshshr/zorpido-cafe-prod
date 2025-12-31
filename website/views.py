@@ -11,6 +11,8 @@ from users.forms import CustomerMessageForm
 from .models import Testimonial
 from .models import FeaturedImage
 from users.models import User
+from django.core.cache import cache
+import os
 
 def home(request):
     """
@@ -36,6 +38,24 @@ def home(request):
     if not featured_items:
         fallback_items = MenuItem.objects.filter(is_active=True, is_featured=True)[:6]
 
+    # Cache leaderboard to reduce DB load and speed up homepage render.
+    # Cache key and timeout can be adjusted via environment variable.
+    leaderboard_cache_key = 'homepage_leaderboard_users_v1'
+    leaderboard_ttl = int(os.environ.get('LEADERBOARD_CACHE_TTL', 60))  # seconds
+
+    leaderboard_users = cache.get(leaderboard_cache_key)
+    if leaderboard_users is None:
+        # Limit the selected fields to what's needed in the template to reduce
+        # data transferred from the DB and avoid expensive model instantiation.
+        leaderboard_qs = (
+            User.objects.filter(is_active=True, user_type='customer')
+            .only('id', 'username', 'full_name', 'loyalty_points', 'profile_picture')
+            .order_by('-loyalty_points')[:20]
+        )
+        # Evaluate queryset into a list so the cached object is JSON-serializable by some caches
+        leaderboard_users = list(leaderboard_qs)
+        cache.set(leaderboard_cache_key, leaderboard_users, leaderboard_ttl)
+
     context = {
         'featured_items': featured_items,
         'fallback_items': fallback_items,
@@ -44,7 +64,7 @@ def home(request):
         'testimonials': Testimonial.objects.filter(is_active=True)[:6],
         'featured_images': FeaturedImage.objects.filter(is_active=True).order_by('order')[:10],
         # Top 20 users by loyalty points (customers only)
-        'leaderboard_users': User.objects.filter(is_active=True, user_type='customer').order_by('-loyalty_points')[:20],
+        'leaderboard_users': leaderboard_users,
     }
     
     return render(request, 'website/home.html', context)

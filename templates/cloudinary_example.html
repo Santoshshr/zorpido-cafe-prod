@@ -1,0 +1,47 @@
+{# Template showing upload form and how to display Cloudinary images. #}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Cloudinary Example</title>
+</head>
+<body>
+  <h1>Cloudinary Example</h1>
+
+  {% if messages %}
+    <ul>
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h2>Upload an image</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="image" accept="image/*" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  {% if uploaded_url %}
+    <h3>Uploaded image</h3>
+    <img src="{{ uploaded_url }}" alt="Uploaded image" style="max-width:400px;" />
+  {% endif %}
+
+  <h2>Display by public id</h2>
+  {% if cloudinary_enabled is not none %}
+    {% if cloudinary_enabled %}
+      {% if image_url %}
+        <p>Image URL: <a href="{{ image_url }}">{{ image_url }}</a></p>
+        <img src="{{ image_url }}" alt="Cloudinary image" style="max-width:400px;" />
+      {% else %}
+        <p>No image generated for provided public id.</p>
+      {% endif %}
+    {% else %}
+      <p><strong>Cloudinary is not configured.</strong> Set env vars or CLOUDINARY_URL.</p>
+    {% endif %}
+  {% endif %}
+
+  <p>Local: add credentials to <em>.env</em>. Production: set env vars in your host.</p>
+</body>
+</html>

@@ -1599,8 +1599,7 @@
                         <div class="rank-badge rank-2">2</div>
                     </div>
                     <div class="champion-details">
-                        <h3 class="champion-name">{{ leaderboard_users.1.full_name|default:leaderboard_users.1.username
-                            }}</h3>
+                        <h3 class="champion-name">{% if leaderboard_users.1.full_name %}{{ leaderboard_users.1.full_name }}{% else %}{{ leaderboard_users.1.username }}{% endif %}</h3>
                         <p class="champion-username">@{{ leaderboard_users.1.username }}</p>
                         <div class="points-display">
                             <span class="points-icon">⭐</span>
@@ -1637,8 +1636,7 @@
                         <div class="rank-badge rank-1">1</div>
                     </div>
                     <div class="champion-details">
-                        <h3 class="champion-name">{{ leaderboard_users.0.full_name|default:leaderboard_users.0.username
-                            }}</h3>
+                        <h3 class="champion-name">{% if leaderboard_users.0.full_name %}{{ leaderboard_users.0.full_name }}{% else %}{{ leaderboard_users.0.username }}{% endif %}</h3>
                         <p class="champion-username">@{{ leaderboard_users.0.username }}</p>
                         <div class="points-display">
                             <span class="points-icon">⭐</span>
@@ -1669,8 +1667,7 @@
                         <div class="rank-badge rank-3">3</div>
                     </div>
                     <div class="champion-details">
-                        <h3 class="champion-name">{{ leaderboard_users.2.full_name|default:leaderboard_users.2.username
-                            }}</h3>
+                        <h3 class="champion-name">{% if leaderboard_users.2.full_name %}{{ leaderboard_users.2.full_name }}{% else %}{{ leaderboard_users.2.username }}{% endif %}</h3>
                         <p class="champion-username">@{{ leaderboard_users.2.username }}</p>
                         <div class="points-display">
                             <span class="points-icon">⭐</span>

@@ -127,3 +127,19 @@ try:
 except Exception:
     # If directory creation fails for any reason, fall back to using STDOUT handled elsewhere.
     pass
+
+
+# Optional: import Cloudinary configuration helper. This is safe — the helper
+# will not raise on missing environment variables and only logs informative
+# messages. Use `zorpido_config.cloudinary.require_cloudinary()` in views that
+# must ensure credentials are present.
+try:
+    # Importing the module runs `init_cloudinary()` but will not crash
+    # the app if credentials are absent or the cloudinary package is not installed.
+    from zorpido_config import cloudinary as cloudinary_config  # noqa: F401
+except Exception:
+    import logging as _logging
+
+    _logging.getLogger(__name__).warning(
+        'Could not import zorpido_config.cloudinary; Cloudinary integration will remain disabled.'
+    )

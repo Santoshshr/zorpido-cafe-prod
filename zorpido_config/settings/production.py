@@ -40,10 +40,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = os.environ.get('STATICFILES_STORAGE', 'whitenoise.storage.CompressedManifestStaticFilesStorage')
 
 # Cloudinary for media is optional in production; fall back to local filesystem if not configured.
+# Cloudinary configuration (production): require credentials and fail fast with
+# a clear error message if any are missing. In production we prefer explicit
+# environment variables (no .env file). You can alternatively set CLOUDINARY_URL.
 cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
 cloud_key = os.environ.get('CLOUDINARY_API_KEY')
 cloud_secret = os.environ.get('CLOUDINARY_API_SECRET')
-if cloud_name and cloud_key and cloud_secret:
+cloud_url = os.environ.get('CLOUDINARY_URL')
+
+if cloud_url:
+    # When CLOUDINARY_URL is provided the cloudinary storage backend will parse it.
+    INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+    CLOUDINARY_STORAGE = {'CLOUDINARY_URL': cloud_url}
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    # Require the three explicit variables in production to avoid silent failures.
+    if not (cloud_name and cloud_key and cloud_secret):
+        raise ImproperlyConfigured(
+            'Cloudinary credentials are required in production. '
+            'Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET '
+            'or set CLOUDINARY_URL (cloudinary://API_KEY:API_SECRET@CLOUD_NAME).'
+        )
+
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': cloud_name,
@@ -51,9 +69,6 @@ if cloud_name and cloud_key and cloud_secret:
         'API_SECRET': cloud_secret,
     }
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    # Default to filesystem media storage in production when Cloudinary isn't configured
-    DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
 
 # Security headers and cookies
 # When behind a reverse proxy (Passenger/Apache), ensure this header is set if your proxy sets it
