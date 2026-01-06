@@ -14,83 +14,79 @@ from users.models import User
 from django.core.cache import cache
 import os
 
-# def home(request):
-#     featured_items = []
-#     fallback_items = []
-#     featured_blogs = []
-#     gallery_images = []
-#     testimonials = []
-#     featured_images = []
-#     leaderboard_users = []
-
-#     try:
-#         featured_items = FeaturedMenu.objects.filter(
-#             is_active=True,
-#             menu_item__is_active=True
-#         ).select_related('menu_item')
-#     except Exception:
-#         pass
-
-#     try:
-#         if not featured_items:
-#             fallback_items = MenuItem.objects.filter(is_active=True, is_featured=True)[:6]
-#     except Exception:
-#         pass
-
-#     try:
-#         featured_blogs = BlogPost.objects.filter(
-#             is_published=True,
-#             is_featured=True
-#         )[:3]
-#     except Exception:
-#         pass
-
-#     try:
-#         gallery_images = GalleryImage.objects.filter(is_active=True, is_zorpido_glimpses=True)
-#     except Exception:
-#         pass
-
-#     try:
-#         testimonials = Testimonial.objects.filter(is_active=True)[:6]
-#     except Exception:
-#         pass
-
-#     try:
-#         featured_images = FeaturedImage.objects.filter(is_active=True).order_by('order')[:10]
-#     except Exception:
-#         pass
-
-#     try:
-#         leaderboard_cache_key = 'homepage_leaderboard_users_v1'
-#         leaderboard_ttl = int(os.environ.get('LEADERBOARD_CACHE_TTL', 60))
-#         leaderboard_users = cache.get(leaderboard_cache_key)
-#         if leaderboard_users is None:
-#             leaderboard_qs = (
-#                 User.objects.filter(is_active=True, user_type='customer')
-#                 .only('id', 'username', 'full_name', 'loyalty_points', 'profile_picture')
-#                 .order_by('-loyalty_points')[:20]
-#             )
-#             leaderboard_users = list(leaderboard_qs)
-#             cache.set(leaderboard_cache_key, leaderboard_users, leaderboard_ttl)
-#     except Exception:
-#         leaderboard_users = []
-
-#     context = {
-#         'featured_items': featured_items,
-#         'fallback_items': fallback_items,
-#         'featured_blogs': featured_blogs,
-#         'gallery_images': gallery_images,
-#         'testimonials': testimonials,
-#         'featured_images': featured_images,
-#         'leaderboard_users': leaderboard_users,
-#     }
-    
-#     return render(request, 'website/home.html', context)
-
-from django.http import HttpResponse
-
 def home(request):
-    return HttpResponse("<h1>Zorpido Home Test</h1>")
+    featured_items = []
+    fallback_items = []
+    featured_blogs = []
+    gallery_images = []
+    testimonials = []
+    featured_images = []
+    leaderboard_users = []
+
+    try:
+        featured_items = FeaturedMenu.objects.filter(
+            is_active=True,
+            menu_item__is_active=True
+        ).select_related('menu_item')
+    except Exception:
+        pass
+
+    try:
+        if not featured_items:
+            fallback_items = MenuItem.objects.filter(is_active=True, is_featured=True)[:6]
+    except Exception:
+        pass
+
+    try:
+        featured_blogs = BlogPost.objects.filter(
+            is_published=True,
+            is_featured=True
+        )[:3]
+    except Exception:
+        pass
+
+    try:
+        gallery_images = GalleryImage.objects.filter(is_active=True, is_zorpido_glimpses=True)
+    except Exception:
+        pass
+
+    try:
+        testimonials = Testimonial.objects.filter(is_active=True)[:6]
+    except Exception:
+        pass
+
+    try:
+        featured_images = FeaturedImage.objects.filter(is_active=True).order_by('order')[:10]
+    except Exception:
+        pass
+
+    try:
+        leaderboard_cache_key = 'homepage_leaderboard_users_v1'
+        leaderboard_ttl = int(os.environ.get('LEADERBOARD_CACHE_TTL', 60))
+        leaderboard_users = cache.get(leaderboard_cache_key)
+        if leaderboard_users is None:
+            leaderboard_qs = (
+                User.objects.filter(is_active=True, user_type='customer')
+                .only('id', 'username', 'full_name', 'loyalty_points', 'profile_picture')
+                .order_by('-loyalty_points')[:20]
+            )
+            leaderboard_users = list(leaderboard_qs)
+            cache.set(leaderboard_cache_key, leaderboard_users, leaderboard_ttl)
+    except Exception:
+        leaderboard_users = []
+
+    context = {
+        'featured_items': featured_items,
+        'fallback_items': fallback_items,
+        'featured_blogs': featured_blogs,
+        'gallery_images': gallery_images,
+        'testimonials': testimonials,
+        'featured_images': featured_images,
+        'leaderboard_users': leaderboard_users,
+    }
+    
+    return render(request, 'website/home.html', context)
+
 
 def about(request):
     """
