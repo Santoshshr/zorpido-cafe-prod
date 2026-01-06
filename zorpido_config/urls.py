@@ -16,10 +16,6 @@ urlpatterns = [
 
 from django.core.files.storage import default_storage
 
-# Only serve MEDIA files via Django's static helper when using filesystem
-# storage (typically local development). When using Cloudinary the media
-# URLs are served by Cloudinary CDN and Django should not attempt to
-# expose `MEDIA_URL` via static() in production.
 if settings.DEBUG:
     # During development only: serve static and media from Django.
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

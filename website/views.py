@@ -18,52 +18,73 @@ def home(request):
     """
     Homepage with featured sections
     """
-    # Get featured menu items
-    featured_items = FeaturedMenu.objects.filter(
-        is_active=True,
-        menu_item__is_active=True
-    ).select_related('menu_item')
-    
-    # Get featured blog posts
-    featured_blogs = BlogPost.objects.filter(
-        is_published=True,
-        is_featured=True
-    )[:3]
-    
-    # Get gallery images marked as "Zorpido's Glimpses"
-    gallery_images = GalleryImage.objects.filter(is_active=True, is_zorpido_glimpses=True)
-    
-    # If no FeaturedMenu records are configured, fall back to MenuItem.is_featured
-    fallback_items = None
-    if not featured_items:
-        fallback_items = MenuItem.objects.filter(is_active=True, is_featured=True)[:6]
+    featured_items = []
+    fallback_items = []
+    featured_blogs = []
+    gallery_images = []
+    testimonials = []
+    featured_images = []
+    leaderboard_users = []
 
-    # Cache leaderboard to reduce DB load and speed up homepage render.
-    # Cache key and timeout can be adjusted via environment variable.
-    leaderboard_cache_key = 'homepage_leaderboard_users_v1'
-    leaderboard_ttl = int(os.environ.get('LEADERBOARD_CACHE_TTL', 60))  # seconds
+    try:
+        featured_items = FeaturedMenu.objects.filter(
+            is_active=True,
+            menu_item__is_active=True
+        ).select_related('menu_item')
+    except Exception:
+        pass
 
-    leaderboard_users = cache.get(leaderboard_cache_key)
-    if leaderboard_users is None:
-        # Limit the selected fields to what's needed in the template to reduce
-        # data transferred from the DB and avoid expensive model instantiation.
-        leaderboard_qs = (
-            User.objects.filter(is_active=True, user_type='customer')
-            .only('id', 'username', 'full_name', 'loyalty_points', 'profile_picture')
-            .order_by('-loyalty_points')[:20]
-        )
-        # Evaluate queryset into a list so the cached object is JSON-serializable by some caches
-        leaderboard_users = list(leaderboard_qs)
-        cache.set(leaderboard_cache_key, leaderboard_users, leaderboard_ttl)
+    try:
+        if not featured_items:
+            fallback_items = MenuItem.objects.filter(is_active=True, is_featured=True)[:6]
+    except Exception:
+        pass
+
+    try:
+        featured_blogs = BlogPost.objects.filter(
+            is_published=True,
+            is_featured=True
+        )[:3]
+    except Exception:
+        pass
+
+    try:
+        gallery_images = GalleryImage.objects.filter(is_active=True, is_zorpido_glimpses=True)
+    except Exception:
+        pass
+
+    try:
+        testimonials = Testimonial.objects.filter(is_active=True)[:6]
+    except Exception:
+        pass
+
+    try:
+        featured_images = FeaturedImage.objects.filter(is_active=True).order_by('order')[:10]
+    except Exception:
+        pass
+
+    try:
+        leaderboard_cache_key = 'homepage_leaderboard_users_v1'
+        leaderboard_ttl = int(os.environ.get('LEADERBOARD_CACHE_TTL', 60))
+        leaderboard_users = cache.get(leaderboard_cache_key)
+        if leaderboard_users is None:
+            leaderboard_qs = (
+                User.objects.filter(is_active=True, user_type='customer')
+                .only('id', 'username', 'full_name', 'loyalty_points', 'profile_picture')
+                .order_by('-loyalty_points')[:20]
+            )
+            leaderboard_users = list(leaderboard_qs)
+            cache.set(leaderboard_cache_key, leaderboard_users, leaderboard_ttl)
+    except Exception:
+        leaderboard_users = []
 
     context = {
         'featured_items': featured_items,
         'fallback_items': fallback_items,
         'featured_blogs': featured_blogs,
         'gallery_images': gallery_images,
-        'testimonials': Testimonial.objects.filter(is_active=True)[:6],
-        'featured_images': FeaturedImage.objects.filter(is_active=True).order_by('order')[:10],
-        # Top 20 users by loyalty points (customers only)
+        'testimonials': testimonials,
+        'featured_images': featured_images,
         'leaderboard_users': leaderboard_users,
     }
     
