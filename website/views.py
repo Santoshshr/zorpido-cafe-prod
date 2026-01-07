@@ -14,126 +14,121 @@ from .models import Testimonial, FeaturedImage
 logger = logging.getLogger(__name__)
 
 
+import os
+import logging
+
+from django.shortcuts import render
+from django.core.cache import cache
+
+from menu.models import MenuItem, FeaturedMenu
+from blogs.models import BlogPost
+from gallery.models import GalleryImage
+from users.models import User
+from .models import Testimonial, FeaturedImage
+
+logger = logging.getLogger(__name__)
+
+
+def safe_query(label, fn, default):
+    """
+    Executes a DB or cache operation safely.
+    Logs exception and returns default on failure.
+    """
+    try:
+        return fn()
+    except Exception:
+        logger.exception(f"{label} failed")
+        return default
+
+
 def home(request):
     """
-    Production-safe homepage view.
-    Handles empty DB, cache failures, and query errors without crashing.
+    Homepage view using centralized error handling.
+    Clean, readable, and production-safe.
     """
 
-    featured_items = []
-    fallback_items = []
-    featured_blogs = []
-    gallery_images = []
-    testimonials = []
-    featured_images = []
-    leaderboard_users = []
+    featured_items = safe_query(
+        "FeaturedMenu",
+        lambda: FeaturedMenu.objects.filter(
+            is_active=True,
+            menu_item__is_active=True
+        ).select_related("menu_item"),
+        []
+    )
 
-    # ─────────────────────────────
-    # Featured menu items
-    # ─────────────────────────────
-    try:
-        featured_items = (
-            FeaturedMenu.objects.filter(
-                is_active=True,
-                menu_item__is_active=True
-            )
-            .select_related('menu_item')
-        )
-    except Exception as e:
-        logger.exception("FeaturedMenu query failed")
+    fallback_items = safe_query(
+        "Fallback MenuItem",
+        lambda: MenuItem.objects.filter(
+            is_active=True,
+            is_featured=True
+        )[:6] if not featured_items or not featured_items.exists() else [],
+        []
+    )
 
-    # ─────────────────────────────
-    # Fallback menu items
-    # ─────────────────────────────
-    try:
-        if not featured_items.exists():
-            fallback_items = (
-                MenuItem.objects.filter(
-                    is_active=True,
-                    is_featured=True
-                )[:6]
-            )
-    except Exception:
-        logger.exception("Fallback MenuItem query failed")
+    featured_blogs = safe_query(
+        "Featured BlogPost",
+        lambda: BlogPost.objects.filter(
+            is_published=True,
+            is_featured=True
+        )[:3],
+        []
+    )
 
-    # ─────────────────────────────
-    # Featured blogs
-    # ─────────────────────────────
-    try:
-        featured_blogs = (
-            BlogPost.objects.filter(
-                is_published=True,
-                is_featured=True
-            )[:3]
-        )
-    except Exception:
-        logger.exception("Featured BlogPost query failed")
+    gallery_images = safe_query(
+        "GalleryImage",
+        lambda: GalleryImage.objects.filter(
+            is_active=True,
+            is_zorpido_glimpses=True
+        ),
+        []
+    )
 
-    # ─────────────────────────────
-    # Gallery images
-    # ─────────────────────────────
-    try:
-        gallery_images = (
-            GalleryImage.objects.filter(
-                is_active=True,
-                is_zorpido_glimpses=True
-            )
-        )
-    except Exception:
-        logger.exception("GalleryImage query failed")
+    testimonials = safe_query(
+        "Testimonial",
+        lambda: Testimonial.objects.filter(is_active=True)[:6],
+        []
+    )
 
-    # ─────────────────────────────
-    # Testimonials
-    # ─────────────────────────────
-    try:
-        testimonials = Testimonial.objects.filter(is_active=True)[:6]
-    except Exception:
-        logger.exception("Testimonial query failed")
+    featured_images = safe_query(
+        "FeaturedImage",
+        lambda: FeaturedImage.objects.filter(
+            is_active=True
+        ).order_by("order")[:10],
+        []
+    )
 
-    # ─────────────────────────────
-    # Featured images
-    # ─────────────────────────────
-    try:
-        featured_images = (
-            FeaturedImage.objects.filter(is_active=True)
-            .order_by('order')[:10]
-        )
-    except Exception:
-        logger.exception("FeaturedImage query failed")
-
-    # ─────────────────────────────
-    # Leaderboard users (cache-safe)
-    # ─────────────────────────────
-    try:
+    def load_leaderboard():
         cache_key = "homepage_leaderboard_users_v1"
-        cache_ttl = int(os.environ.get("LEADERBOARD_CACHE_TTL", 60))
+        ttl = int(os.environ.get("LEADERBOARD_CACHE_TTL", 60))
 
-        leaderboard_users = cache.get(cache_key)
+        users = cache.get(cache_key)
+        if users is not None:
+            return users
 
-        if leaderboard_users is None:
-            leaderboard_users = list(
-                User.objects.filter(
-                    is_active=True,
-                    user_type="customer"
-                )
-                .only(
-                    "id",
-                    "username",
-                    "full_name",
-                    "loyalty_points",
-                    "profile_picture"
-                )
-                .order_by("-loyalty_points")[:20]
+        users = list(
+            User.objects.filter(
+                is_active=True,
+                user_type="customer"
             )
-            cache.set(cache_key, leaderboard_users, cache_ttl)
+            .only(
+                "id",
+                "username",
+                "full_name",
+                "loyalty_points",
+                "profile_picture"
+            )
+            .order_by("-loyalty_points")[:20]
+        )
 
-    except Exception:
-        logger.exception("Leaderboard users query failed")
-        leaderboard_users = []
+        cache.set(cache_key, users, ttl)
+        return users
 
-    # ─────────────────────────────
-    # Context
-    # ─────────────────────────────
+    leaderboard_users = safe_query(
+        "Leaderboard Users",
+        load_leaderboard,
+        []
+    )
+
     context = {
         "featured_items": featured_items,
         "fallback_items": fallback_items,
@@ -145,7 +140,6 @@ def home(request):
     }
 
     return render(request, "website/home.html", context)
-
 
 # --- Other views remain unchanged ---
 def about(request):
