@@ -23,26 +23,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles-dev'
 # can be configured in development (prevents errors when filename is empty).
 LOGGING['handlers']['file']['filename'] = str(BASE_DIR / 'logs' / 'errors.log')
 
-# Cloudinary is not used locally
-# Local development: load .env (base.py already calls load_dotenv). Cloudinary
-# is optional locally — developers can add credentials to `.env` to test.
-try:
-    # Import our helper which attempts to initialize cloudinary safely.
-    from zorpido_config import cloudinary as cloudinary_config  # noqa: F401
-
-    if cloudinary_config.CLOUDINARY_ENABLED:
-        # If the SDK was initialized and credentials are present, enable apps
-        INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
-        # Configure Django to use Cloudinary for media files in local dev
-        DEFAULT_FILE_STORAGE = os.environ.get(
-            'DEFAULT_FILE_STORAGE', 'cloudinary_storage.storage.MediaCloudinaryStorage'
-        )
-    else:
-        # Keep filesystem storage locally when Cloudinary is not configured
-        DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
-except Exception:
-    # If something goes wrong importing the helper, fall back to filesystem.
-    DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
+# Local development: use filesystem storage for media files
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Comment: Use this settings file for local development only.
 

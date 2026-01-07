@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from utils.supabase_storage import get_file_url
 
 MODELS_AND_FIELDS = [
     ('users', 'User', 'profile_picture'),

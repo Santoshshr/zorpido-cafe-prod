@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from decimal import Decimal
 from django.core.validators import RegexValidator
-from utils.supabase_storage import upload_file
+from django.db import models
 
 # Cloudinary is optional for local development. Provide a fallback field
 # so importing models does not fail when `cloudinary` package is not installed.
@@ -76,25 +76,8 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     # Profile picture — store using CloudinaryField so uploads resolve
     # to Cloudinary-managed media and `.url` works in templates/admin.
-    profile_picture = CloudinaryField('profile_picture', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
-    def set_profile_picture_from_file(self, file_obj, file_name: str = None):
-        """
-        Upload `file_obj` to Supabase Storage and update `profile_picture` with
-        the returned public URL. `file_name` is optional — if omitted the
-        uploaded filename will be used as provided by the caller.
-
-        Example: user.set_profile_picture_from_file(request.FILES['avatar'], f"profile_pictures/{user.pk}.jpg")
-        """
-        if file_name is None:
-            file_name = getattr(file_obj, 'name', 'uploads/unnamed')
-        # `upload_file` uses Django's `default_storage` — when configured to
-        # Cloudinary this will return a Cloudinary URL. Keep helper for
-        # backward-compatible callers.
-        url = upload_file(file_obj, file_name)
-        self.profile_picture = url
-        self.save(update_fields=['profile_picture'])
-    
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"

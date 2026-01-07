@@ -1,6 +1,4 @@
 from django.db import models
-from cloudinary.models import CloudinaryField
-from utils.supabase_storage import upload_file
 
 
 class GalleryImage(models.Model):
@@ -19,14 +17,7 @@ class GalleryImage(models.Model):
 	)
 
 	title = models.CharField(max_length=200, blank=True)
-	image = CloudinaryField('image', null=True, blank=True)
-
-	def set_image_from_file(self, file_obj, file_name: str = None):
-		if file_name is None:
-			file_name = getattr(file_obj, 'name', 'gallery/unnamed')
-		url = upload_file(file_obj, file_name)
-		self.image = url
-		self.save(update_fields=['image'])
+	image = models.ImageField(upload_to='gallery/', null=True, blank=True)
 	caption = models.TextField(blank=True)
 	category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
 	is_active = models.BooleanField(default=True)

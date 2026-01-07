@@ -3,9 +3,7 @@ Blog models for content management
 """
 
 from django.db import models
-from cloudinary.models import CloudinaryField
 from django.conf import settings
-from utils.supabase_storage import upload_file
 from django.utils.text import slugify
 
 class BlogPost(models.Model):
@@ -24,15 +22,7 @@ class BlogPost(models.Model):
     excerpt = models.TextField(max_length=5000, help_text="Short description")
     content = models.TextField()
     # Use Cloudinary for featured images
-    featured_image = CloudinaryField('featured_image', blank=True, null=True)
-
-    def set_featured_image_from_file(self, file_obj, file_name: str = None):
-        if file_name is None:
-            file_name = getattr(file_obj, 'name', 'blogs/unnamed')
-        url = upload_file(file_obj, file_name)
-        # Assign the returned storage URL for compatibility.
-        self.featured_image = url
-        self.save(update_fields=['featured_image'])
+    featured_image = models.ImageField(upload_to='blogs/', blank=True, null=True)
     
     # SEO
     meta_description = models.CharField(max_length=160, blank=True)

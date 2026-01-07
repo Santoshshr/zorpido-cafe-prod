@@ -6,7 +6,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
 from .models import User, CustomerMessage
-from utils.supabase_storage import upload_file
 
 class CustomerRegistrationForm(UserCreationForm):
     """
