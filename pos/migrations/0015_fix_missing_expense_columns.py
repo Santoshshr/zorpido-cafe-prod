@@ -1,6 +1,7 @@
 """Fallback migration copy in case earlier renames left duplicated numbers.
 
 This file mirrors the earlier fix and is safe if the other copy remains.
+Database-agnostic version that works on SQLite, PostgreSQL, and MySQL.
 """
 from django.db import migrations
 
@@ -8,27 +9,55 @@ from django.db import migrations
 def add_missing_columns(apps, schema_editor):
     conn = schema_editor.connection
     table_name = 'pos_expense'
+    vendor = conn.vendor
+    
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=%s", (table_name,))
+        
+        # Check if table exists
+        if vendor == 'sqlite3':
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=%s", (table_name,))
+        elif vendor == 'postgresql':
+            cursor.execute("SELECT tablename FROM pg_tables WHERE tablename = %s", (table_name,))
+        elif vendor == 'mysql':
+            cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_name = %s AND table_schema = DATABASE()", (table_name,))
+        else:
+            # Unknown database, skip
+            return
+            
         if not cursor.fetchone():
             return
-        cursor.execute(f"PRAGMA table_info('{table_name}')")
-        existing = {row[1] for row in cursor.fetchall()}
+            
+        # Get existing columns
+        if vendor == 'sqlite3':
+            cursor.execute(f"PRAGMA table_info('{table_name}')")
+            existing = {row[1] for row in cursor.fetchall()}
+        elif vendor == 'postgresql':
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = %s AND table_schema = 'public'", (table_name,))
+            existing = {row[0] for row in cursor.fetchall()}
+        elif vendor == 'mysql':
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name = %s AND table_schema = DATABASE()", (table_name,))
+            existing = {row[0] for row in cursor.fetchall()}
+        else:
+            return
+            
+        # Columns to add with database-agnostic SQL
         to_add = {
-            'updated_at': "ALTER TABLE pos_expense ADD COLUMN updated_at datetime",
-            'created_by_id': "ALTER TABLE pos_expense ADD COLUMN created_by_id integer",
-            'description': "ALTER TABLE pos_expense ADD COLUMN description text",
-            'date': "ALTER TABLE pos_expense ADD COLUMN date date",
-            'category_id': "ALTER TABLE pos_expense ADD COLUMN category_id integer",
-            'created_at': "ALTER TABLE pos_expense ADD COLUMN created_at datetime",
-            'amount': "ALTER TABLE pos_expense ADD COLUMN amount numeric",
+            'updated_at': f"ALTER TABLE {table_name} ADD COLUMN updated_at TIMESTAMP NULL",
+            'created_by_id': f"ALTER TABLE {table_name} ADD COLUMN created_by_id INTEGER NULL",
+            'description': f"ALTER TABLE {table_name} ADD COLUMN description TEXT NULL",
+            'date': f"ALTER TABLE {table_name} ADD COLUMN date DATE NULL",
+            'category_id': f"ALTER TABLE {table_name} ADD COLUMN category_id INTEGER NULL",
+            'created_at': f"ALTER TABLE {table_name} ADD COLUMN created_at TIMESTAMP NULL",
+            'amount': f"ALTER TABLE {table_name} ADD COLUMN amount DECIMAL(10,2) NULL",
         }
+        
         for col, sql in to_add.items():
             if col not in existing:
                 try:
                     cursor.execute(sql)
                 except Exception:
+                    # Ignore errors (column might already exist or other issues)
                     pass
     finally:
         try:
