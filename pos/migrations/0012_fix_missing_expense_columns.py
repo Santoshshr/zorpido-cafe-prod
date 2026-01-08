@@ -1,3 +1,6 @@
+from django.db import migrations
+
+
 def add_missing_columns(apps, schema_editor):
     """
     Adds missing columns to pos_expense table in a database-agnostic way.
@@ -77,3 +80,18 @@ def add_missing_columns(apps, schema_editor):
 
     finally:
         cursor.close()
+
+
+def noop(apps, schema_editor):
+    return
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('pos', '0011_add_expenses'),
+    ]
+
+    operations = [
+        migrations.RunPython(add_missing_columns, reverse_code=noop),
+    ]
