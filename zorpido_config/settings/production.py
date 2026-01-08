@@ -6,6 +6,9 @@ import dj_database_url
 # Production must be explicit
 DEBUG = False
 
+# ADMINS: disable error emails in production (can be enabled if email is configured)
+ADMINS = []
+
 # SECRET_KEY must be provided via environment in production
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
@@ -40,9 +43,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = os.environ.get('STATICFILES_STORAGE', 'whitenoise.storage.CompressedManifestStaticFilesStorage')
 
 # Cloudinary for media is optional in production; fall back to local filesystem if not configured.
-# Cloudinary configuration (production): require credentials and fail fast with
-# a clear error message if any are missing. In production we prefer explicit
-# environment variables (no .env file). You can alternatively set CLOUDINARY_URL.
+# Cloudinary configuration (production): prefer explicit environment variables.
+# If not provided, fall back to filesystem storage.
 cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
 cloud_key = os.environ.get('CLOUDINARY_API_KEY')
 cloud_secret = os.environ.get('CLOUDINARY_API_SECRET')
@@ -53,15 +55,8 @@ if cloud_url:
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
     CLOUDINARY_STORAGE = {'CLOUDINARY_URL': cloud_url}
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    # Require the three explicit variables in production to avoid silent failures.
-    if not (cloud_name and cloud_key and cloud_secret):
-        raise ImproperlyConfigured(
-            'Cloudinary credentials are required in production. '
-            'Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET '
-            'or set CLOUDINARY_URL (cloudinary://API_KEY:API_SECRET@CLOUD_NAME).'
-        )
-
+elif cloud_name and cloud_key and cloud_secret:
+    # Use individual environment variables if all are provided
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': cloud_name,
@@ -69,6 +64,9 @@ else:
         'API_SECRET': cloud_secret,
     }
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    # Fall back to filesystem storage if Cloudinary is not configured
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Security headers and cookies
 # When behind a reverse proxy (Passenger/Apache), ensure this header is set if your proxy sets it
@@ -88,3 +86,10 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Ensure logging writes to production logs (base already set a default; override here if needed)
 LOGGING['handlers']['file']['filename'] = str(BASE_DIR / 'logs' / 'errors.log')
+
+# Also log errors to console for debugging in production
+LOGGING['handlers']['console'] = {
+    'level': 'ERROR',
+    'class': 'logging.StreamHandler',
+}
+LOGGING['loggers']['django']['handlers'].append('console')
