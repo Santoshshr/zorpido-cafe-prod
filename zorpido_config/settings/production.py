@@ -32,7 +32,8 @@ if not DATABASE_URL:
 
 # Parse the DATABASE_URL and set a reasonable connection age to reuse connections
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=int(os.environ.get('CONN_MAX_AGE', 600)))
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+    
 }
 
 # Static and media
