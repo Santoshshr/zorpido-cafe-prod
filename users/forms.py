@@ -6,17 +6,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
 from .models import User, CustomerMessage
-from zorpido_config.cloudinary import is_cloudinary_enabled, require_cloudinary
-
-
-def upload_file(file, filename):
-    """Upload file to Cloudinary and return the secure URL."""
-    if not is_cloudinary_enabled():
-        raise ValueError("Cloudinary is not configured. Cannot upload files.")
-    require_cloudinary()
-    from cloudinary.uploader import upload
-    result = upload(file, public_id=filename)
-    return result['secure_url']
 
 class CustomerRegistrationForm(UserCreationForm):
     """
@@ -220,46 +209,25 @@ class ProfileUpdateForm(forms.ModelForm):
     """
     Form for customers to update their profile
     """
-    # Add a dedicated file input for uploads. The model stores a public URL.
-    profile_upload = forms.FileField(required=False, label='Upload Profile Picture')
 
     class Meta:
         model = User
-        fields = ['full_name', 'email', 'phone', 'date_of_birth', 'location']
+        fields = ['full_name', 'email', 'phone', 'date_of_birth', 'location', 'profile_picture']
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
         }
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError('This email address is already in use.')
-        return email
-
-    def save(self, commit=True):
-        """Upload any provided profile file to Supabase and store the returned URL."""
-        instance = super().save(commit=False)
-        upload = self.cleaned_data.get('profile_upload')
-        if upload:
-            # build a reasonable storage path using user pk if available
-            filename = f"profile_pictures/{instance.pk or 'user'}_{upload.name}"
-            url = upload_file(upload, filename)
-            instance.profile_picture = url
-        if commit:
-            instance.save()
-        return instance
 
 
 class StaffCustomerForm(forms.ModelForm):
     """Form for staff to edit customer profiles and basic financials."""
-    profile_upload = forms.FileField(required=False, label='Upload Profile Picture')
     class Meta:
         model = User
-        fields = ['full_name', 'email', 'phone', 'date_of_birth', 'location', 'loyalty_points', 'credit_balance']
+        fields = ['full_name', 'email', 'phone', 'date_of_birth', 'location', 'loyalty_points', 'credit_balance', 'profile_picture']
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -268,18 +236,8 @@ class StaffCustomerForm(forms.ModelForm):
             'location': forms.TextInput(attrs={'class': 'form-control'}),
             'loyalty_points': forms.NumberInput(attrs={'class': 'form-control'}),
             'credit_balance': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
         }
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        upload = self.cleaned_data.get('profile_upload')
-        if upload:
-            filename = f"profile_pictures/{instance.pk or 'user'}_{upload.name}"
-            url = upload_file(upload, filename)
-            instance.profile_picture = url
-        if commit:
-            instance.save()
-        return instance
 
 
 class CreditAdjustmentForm(forms.Form):
