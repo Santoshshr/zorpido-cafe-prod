@@ -6,6 +6,17 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
 from .models import User, CustomerMessage
+from zorpido_config.cloudinary import is_cloudinary_enabled, require_cloudinary
+
+
+def upload_file(file, filename):
+    """Upload file to Cloudinary and return the secure URL."""
+    if not is_cloudinary_enabled():
+        raise ValueError("Cloudinary is not configured. Cannot upload files.")
+    require_cloudinary()
+    from cloudinary.uploader import upload
+    result = upload(file, public_id=filename)
+    return result['secure_url']
 
 class CustomerRegistrationForm(UserCreationForm):
     """

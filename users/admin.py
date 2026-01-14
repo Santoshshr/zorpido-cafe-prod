@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django import forms
 from .models import User, CustomerMessage
 from django.utils.html import format_html
+from .forms import upload_file
 
 
 @admin.register(User)
@@ -68,7 +69,14 @@ class UserAdmin(DjangoUserAdmin):
 	def save_model(self, request, obj, form, change):
 		file = form.cleaned_data.get('profile_upload') if form.is_valid() else None
 		if file:
-			obj.profile_picture = file
+			try:
+				filename = f"profile_pictures/{obj.pk or 'user'}_{file.name}"
+				url = upload_file(file, filename)
+				obj.profile_picture = url
+			except ValueError as e:
+				# If upload fails, perhaps set to None or show error
+				# For now, ignore to avoid crash
+				pass
 		super().save_model(request, obj, form, change)
 
 

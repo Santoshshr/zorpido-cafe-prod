@@ -75,8 +75,7 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     # Profile picture — store using CloudinaryField so uploads resolve
-    # to Cloudinary-managed media and `.url` works in templates/admin.
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    profile_picture = CloudinaryField(blank=True, null=True)
 
     class Meta:
         verbose_name = "User"
