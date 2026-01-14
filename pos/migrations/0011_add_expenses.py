@@ -1,6 +1,7 @@
 """Create ExpenseCategory and Expense models."""
 from django.db import migrations, models
 import django.db.models.deletion
+from django.utils import timezone
 
 
 class Migration(migrations.Migration):
@@ -10,19 +11,28 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='ExpenseCategory',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=120, unique=True)),
-                ('slug', models.SlugField(max_length=140, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-            ],
-            options={
-                'verbose_name': 'Expense Category',
-                'verbose_name_plural': 'Expense Categories',
-                'ordering': ['name'],
-            },
+        migrations.RunSQL(
+            "DROP TABLE IF EXISTS pos_expense",
+            reverse_sql=migrations.RunSQL.noop,
+        ),
+        migrations.AddField(
+            model_name='expensecategory',
+            name='name',
+            field=models.CharField(max_length=120, unique=True, default='Default Category'),
+        ),
+        migrations.AddField(
+            model_name='expensecategory',
+            name='slug',
+            field=models.SlugField(max_length=140, unique=True, default='default-category'),
+        ),
+        migrations.AddField(
+            model_name='expensecategory',
+            name='created_at',
+            field=models.DateTimeField(default=timezone.now),
+        ),
+        migrations.AlterModelOptions(
+            name='expensecategory',
+            options={'ordering': ['name'], 'verbose_name': 'Expense Category', 'verbose_name_plural': 'Expense Categories'},
         ),
         migrations.CreateModel(
             name='Expense',

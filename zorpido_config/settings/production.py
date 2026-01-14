@@ -25,16 +25,20 @@ raw_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
 if raw_csrf:
     CSRF_TRUSTED_ORIGINS = [u.strip() for u in raw_csrf.split(',') if u.strip()]
 
-# Database: require DATABASE_URL in production (Postgres or MySQL)
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if not DATABASE_URL:
-    raise ImproperlyConfigured('DATABASE_URL environment variable is required in production')
+from decouple import config
 
-# Parse the DATABASE_URL and set a reasonable connection age to reuse connections
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
-    
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': config('SUPABASE_DB_HOST'),
+        'PORT': config('SUPABASE_DB_PORT', cast=int),
+        'NAME': config('SUPABASE_DB_NAME'),
+        'USER': config('SUPABASE_DB_USER'),
+        'PASSWORD': config('SUPABASE_DB_PASSWORD'),
+        'OPTIONS': {'sslmode': 'require'},  # Required for Supabase
+    }
 }
+
 
 # Static and media
 STATIC_ROOT = BASE_DIR / 'staticfiles'
