@@ -30,12 +30,12 @@ if raw_csrf:
 if os.environ.get('DATABASE_URL'):
     # Use dj-database-url to parse the DATABASE_URL environment variable
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600,
-            ssl_require=True,
-        )
-    }
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),  # Read DATABASE_URL from environment
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 else:
     # Fallback to environment variables if DATABASE_URL is not set
     DATABASES = {
