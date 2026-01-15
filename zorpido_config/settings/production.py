@@ -36,7 +36,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME", "zorpido_web_db"),
         "USER": os.environ.get("DB_USER", "zorpido_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "Zorpido_web_db@1"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "Zorpido123"),
         "HOST": os.environ.get("DB_HOST", "localhost"),
         "PORT": os.environ.get("DB_PORT", "3306"),
     }
