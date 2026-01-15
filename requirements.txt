@@ -1,48 +1,25 @@
-# Django and core dependencies
 Django==4.2.27
 asgiref==3.10.0
 sqlparse==0.5.3
-
-# Database
 dj-database-url==1.1.0
 psycopg2-binary==2.9.9
-
-# Web server
 gunicorn==21.2.0
 whitenoise==6.6.0
-
-# Environment variables
 python-decouple==3.8
 python-dotenv==1.0.0
-
-# Image handling
 Pillow==10.2.0
-
-# API and external services
 requests==2.32.5
 cloudinary==1.44.1
 django-cloudinary-storage==0.3.0
-
-# CORS handling
 django-cors-headers==4.3.1
-
-# Form enhancements
 django-widget-tweaks==1.5.0
-
-# Email and messaging
 qrcode==7.4.2
 reportlab==3.6.12
-
-# Utilities
 python-dateutil==2.8.2
 PyJWT==2.10.1
 packaging==25.0
 tzdata==2025.2
-
-# Security
 certifi==2025.11.12
 urllib3==2.6.2
-
-# Type support
 typing_extensions==4.15.0
 
