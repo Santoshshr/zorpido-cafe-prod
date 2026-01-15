@@ -3,6 +3,12 @@ import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
 
+try:
+    import pymysql  # type: ignore
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
+
 # Production must be explicit
 DEBUG = False
 
@@ -27,12 +33,12 @@ if raw_csrf:
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DB_NAME", "zorpido_web_db"),
         "USER": os.environ.get("DB_USER", "zorpido_user"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "Zorpido_web_db@1"),
         "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "PORT": os.environ.get("DB_PORT", "3306"),
     }
 }
 
