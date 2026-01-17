@@ -2,6 +2,7 @@ from .base import *
 import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
+from pathlib import Path
 
 # Load .env only for local dev (optional)
 try:
@@ -39,22 +40,30 @@ if raw_csrf:
 # --------------------------
 # DATABASES
 # --------------------------
-DATABASES = {}
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Get DATABASE_URL from environment
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    DATABASES['default'] = dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
-else:
-    # Local fallback
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),
+    # PostgreSQL on Render
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
+else:
+    # Local fallback: SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(BASE_DIR / 'db.sqlite3'),
+        }
+    }
+
 
 # --------------------------
 # STATIC FILES
