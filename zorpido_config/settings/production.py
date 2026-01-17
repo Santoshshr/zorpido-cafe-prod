@@ -40,8 +40,8 @@ if raw_csrf:
 # DATABASES must ALWAYS be defined unconditionally to avoid ImproperlyConfigured errors
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600,
+        conn_max_age=600,           # optional but recommended
+        conn_health_checks=True,    # optional, nice on Render
     )
 }
 # Note: ssl_require is handled by Render's PostgreSQL connection string when DATABASE_URL is set
