@@ -40,8 +40,8 @@ if raw_csrf:
 # DATABASES must ALWAYS be defined unconditionally to avoid ImproperlyConfigured errors
 DATABASES = {
     'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
         conn_max_age=600,           # optional but recommended
-        conn_health_checks=True,    # optional, nice on Render
     )
 }
 # Note: ssl_require is handled by Render's PostgreSQL connection string when DATABASE_URL is set
@@ -71,14 +71,17 @@ MEDIA_URL = '/media/'
 # If not provided, fall back to filesystem storage.
 cloud_url = os.environ.get('CLOUDINARY_URL')
 
-if cloud_url:
-    # When CLOUDINARY_URL is provided, the cloudinary storage backend will parse it.
-    INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
-    CLOUDINARY_STORAGE = {'CLOUDINARY_URL': cloud_url}
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    # Fall back to filesystem storage if Cloudinary is not configured
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+# Enforce Cloudinary for media in production. Do NOT allow local filesystem
+# media in production; require the environment-provided Cloudinary URL.
+if not cloud_url:
+    raise ImproperlyConfigured(
+        'CLOUDINARY_URL environment variable is required in production for media storage.'
+    )
+
+# When CLOUDINARY_URL is provided, enable the Cloudinary storage backend.
+INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+CLOUDINARY_STORAGE = {'CLOUDINARY_URL': cloud_url}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # ============================================================================
