@@ -2,7 +2,8 @@ from .base import *
 import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
-# Production must be explicit
+from dotenv import load_dotenv
+load_dotenv()
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # ADMINS: disable error emails in production (can be enabled if email is configured)
@@ -28,26 +29,13 @@ if raw_csrf:
 # Database: Use dj-database-url for PostgreSQL via DATABASE_URL (Render sets this automatically)
 # This supports both Render's managed PostgreSQL and any other PostgreSQL database
 if os.environ.get('DATABASE_URL'):
-    # Use dj-database-url to parse the DATABASE_URL environment variable
-    DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),  # Read DATABASE_URL from environment
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
-else:
-    # Fallback to environment variables if DATABASE_URL is not set
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'zorpido_db'),
-            'USER': os.environ.get('DB_USER', 'zorpido_user'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
-        }
-    }
+            DATABASES = {
+                'default': dj_database_url.config(
+                    default='sqlite:///db.sqlite3',
+                    conn_max_age=600,
+                    ssl_require=True
+                )
+            }
 
 
 
