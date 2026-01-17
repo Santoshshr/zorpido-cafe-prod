@@ -26,16 +26,20 @@ raw_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
 if raw_csrf:
     CSRF_TRUSTED_ORIGINS = [u.strip() for u in raw_csrf.split(',') if u.strip()]
 
-# Database: Use dj-database-url for PostgreSQL via DATABASE_URL (Render sets this automatically)
-# This supports both Render's managed PostgreSQL and any other PostgreSQL database
-if os.environ.get('DATABASE_URL'):
-            DATABASES = {
-                'default': dj_database_url.config(
-                    default='sqlite:///db.sqlite3',
-                    conn_max_age=600,
-                    ssl_require=True
-                )
-            }
+# ============================================================================
+# DATABASE CONFIGURATION FOR RENDER
+# ============================================================================
+# Use dj-database-url for PostgreSQL via DATABASE_URL (Render sets this automatically)
+# This supports both Render's managed PostgreSQL and local SQLite development fallback
+# DATABASES must ALWAYS be defined unconditionally to avoid ImproperlyConfigured errors
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600,
+    )
+}
+# Note: ssl_require is handled by Render's PostgreSQL connection string when DATABASE_URL is set
+# For local development, SQLite is used (no SSL needed)
 
 
 
