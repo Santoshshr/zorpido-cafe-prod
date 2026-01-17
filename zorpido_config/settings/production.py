@@ -44,25 +44,16 @@ if raw_csrf:
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Get DATABASE_URL from environment
-DATABASE_URL = os.environ.get('DATABASE_URL')
-
-if DATABASE_URL:
-    # PostgreSQL on Render
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-else:
-    # Local fallback: SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(BASE_DIR / 'db.sqlite3'),
-        }
-    }
+# Configure DATABASES unconditionally using dj-database-url.
+# This ensures `ENGINE` is always present; when `DATABASE_URL` is set
+# a PostgreSQL config will be returned, otherwise we fall back to SQLite.
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///{}'.format(BASE_DIR / 'db.sqlite3'),
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
+}
 
 
 # --------------------------
