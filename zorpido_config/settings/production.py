@@ -16,11 +16,17 @@ if not SECRET_KEY:
 
 # ALLOWED_HOSTS must be provided in environment for production. Accept comma-separated list.
 # For Render, include the default domain: app-name.onrender.com
-raw_allowed = os.environ.get('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = [h.strip() for h in raw_allowed.split(',') if h.strip()]
-if not ALLOWED_HOSTS:
-    raise ImproperlyConfigured('ALLOWED_HOSTS environment variable is required in production')
 
+raw_allowed = os.environ.get("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in raw_allowed.split(",") if h.strip()]
+
+if not ALLOWED_HOSTS:
+    if os.environ.get("DEBUG", "False") == "False":
+        raise ImproperlyConfigured(
+            "ALLOWED_HOSTS environment variable must be set in production"
+        )
+    else:
+        ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 # CSRF trusted origins - comma-separated, include scheme (https://)
 raw_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
 if raw_csrf:
