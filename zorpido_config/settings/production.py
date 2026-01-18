@@ -8,6 +8,7 @@ import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
 
+
 # Load .env only for local dev (optional)
 try:
     from dotenv import load_dotenv
@@ -47,16 +48,17 @@ if raw_csrf:
 
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-
 if not DATABASE_URL:
-    raise ImproperlyConfigured("DATABASE_URL is not set")
+    raise ImproperlyConfigured("DATABASE_URL environment variable is required in production")
+
+# Parse DATABASE_URL and ensure a valid PostgreSQL engine is set
+db_config = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+db_config.setdefault('ENGINE', 'django.db.backends.postgresql')
+# Force canonical Postgres engine name to avoid dummy/backends
+db_config['ENGINE'] = 'django.db.backends.postgresql'
 
 DATABASES = {
-    "default": dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True,
-    )
+    'default': db_config
 }
 
 
@@ -78,21 +80,14 @@ cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
 api_key = os.environ.get('CLOUDINARY_API_KEY')
 api_secret = os.environ.get('CLOUDINARY_API_SECRET')
 
-if not (cloud_name and api_key and api_secret):
-    raise ImproperlyConfigured("Cloudinary environment variables are required in production")
-
-INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
-
-# Cloudinary is used for MEDIA (uploads). Do not use Cloudinary as the
-# STATICFILES_STORAGE; that would prevent `collectstatic` from managing
-# static assets via WhiteNoise.
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': cloud_name,
-    'API_KEY': api_key,
-    'API_SECRET': api_secret
-}
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+if cloud_name and api_key and api_secret:
+    INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': cloud_name,
+        'API_KEY': api_key,
+        'API_SECRET': api_secret,
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # --------------------------
 # SECURITY
