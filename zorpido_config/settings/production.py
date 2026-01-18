@@ -2,9 +2,6 @@ from .base import *
 import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
-from pathlib import Path
-
-
 # Load .env only for local dev (optional)
 try:
     from dotenv import load_dotenv
@@ -54,14 +51,12 @@ if DATABASE_URL:
             DATABASE_URL,
             conn_max_age=600,
             ssl_require=True
-        )
-    }
-    # Extra safety check
-    if 'ENGINE' not in DATABASES['default'] or not DATABASES['default']['ENGINE']:
-        raise ImproperlyConfigured("DATABASE_URL is invalid or DATABASES['default']['ENGINE'] is missing")
-else:
-    # Local SQLite fallback
-    DATABASES = {
+
+
+        # --------------------------
+        # DATABASES
+        # --------------------------
+
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': str(BASE_DIR / 'db.sqlite3'),
