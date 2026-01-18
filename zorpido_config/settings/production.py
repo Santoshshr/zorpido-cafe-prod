@@ -51,12 +51,11 @@ if DATABASE_URL:
             DATABASE_URL,
             conn_max_age=600,
             ssl_require=True
-
-
-        # --------------------------
-        # DATABASES
-        # --------------------------
-
+        )
+    }
+else:
+    # Fallback to SQLite
+    DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': str(BASE_DIR / 'db.sqlite3'),
