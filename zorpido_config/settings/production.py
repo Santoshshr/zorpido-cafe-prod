@@ -61,7 +61,6 @@ else:
             'NAME': str(BASE_DIR / 'db.sqlite3'),
         }
     }
-
 # --------------------------
 # STATIC FILES
 # --------------------------
