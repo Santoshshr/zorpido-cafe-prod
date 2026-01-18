@@ -1,4 +1,9 @@
 from .base import *
+# Do NOT redefine BASE_DIR here; use BASE_DIR from base.py so path
+# calculations (STATIC_ROOT, MEDIA_ROOT, etc.) remain consistent
+# across environments. Removing any local override prevents missing
+# or mis-pointed static/media directories which can break management
+# commands like `collectstatic`.
 import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
@@ -64,6 +69,9 @@ else:
 # --------------------------
 # STATIC FILES
 # --------------------------
+# Use the STATIC_* settings from base.py (BASE_DIR and defaults)
+# Ensure WhiteNoise handles static files; Cloudinary is configured
+# below only for media (DEFAULT_FILE_STORAGE).
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -80,6 +88,9 @@ if not (cloud_name and api_key and api_secret):
 
 INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
 
+# Cloudinary is used for MEDIA (uploads). Do not use Cloudinary as the
+# STATICFILES_STORAGE; that would prevent `collectstatic` from managing
+# static assets via WhiteNoise.
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': cloud_name,
     'API_KEY': api_key,
