@@ -7,6 +7,7 @@ from .base import *
 import os
 from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
+
 # Load .env only for local dev (optional)
 try:
     from dotenv import load_dotenv
@@ -44,28 +45,16 @@ if raw_csrf:
 # DATABASES
 # --------------------------
 
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+if not DATABASE_URL:
+    raise ImproperlyConfigured("DATABASE_URL environment variable is not set")
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASES = {
+    "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+}
 
-if DATABASE_URL:
-    # Production PostgreSQL
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-else:
-    # Fallback to SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(BASE_DIR / 'db.sqlite3'),
-        }
-    }
+
 # --------------------------
 # STATIC FILES
 # --------------------------
