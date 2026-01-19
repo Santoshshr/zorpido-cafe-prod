@@ -15,14 +15,12 @@ services:
     region: oregon
     buildCommand: |
       pip install -r requirements.txt
-      python manage.py collectstatic --noinput --settings=zorpido_config.setting.production
-      python manage.py migrate --noinput --settings=zorpido_config.setting.production
-    startCommand: gunicorn zorpido_config.wsgi:application --workers 3 --bind 0.0.0.0:$PORT --log-file -
+      python manage.py collectstatic --noinput --settings=zorpido_config.settings.production
+      python manage.py migrate --noinput --settings=zorpido_config.settings.production
     envVars:
-      # FIX: Changed 'settings' (plural) to 'setting' (singular) to match your folder
       - key: DJANGO_SETTINGS_MODULE
-        value: zorpido_config.setting.production
-      
+        value: zorpido_config.settings.production
+
       - key: DEBUG
         value: "False"
       
