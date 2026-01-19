@@ -13,10 +13,7 @@ services:
     runtime: python # This will automatically use the latest version or your runtime.txt
     plan: free
     region: oregon
-    buildCommand: |
-      pip install -r requirements.txt
-      python manage.py collectstatic --noinput --settings=zorpido_config.settings.production
-      python manage.py migrate --noinput --settings=zorpido_config.settings.production
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput --settings=zorpido_config.settings.production && python manage.py migrate --noinput --settings=zorpido_config.settings.production
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: zorpido_config.settings.production
