@@ -1,76 +1,58 @@
 services:
-  # PostgreSQL database service
-  - type: pserv
+  # Managed PostgreSQL database (Standard for Render Blueprints)
+  - type: database
     name: zorpido-postgres
-    ipAddress: 10.5.0.3
     plan: free
     region: oregon
     databaseName: zorpido_db
     user: zorpido_user
-    # PostgreSQL version
-    version: 15
 
   # Web service
   - type: web
     name: zorpido-web
-    runtime: python311
+    runtime: python # This will automatically use the latest version or your runtime.txt
     plan: free
     region: oregon
     buildCommand: |
       pip install -r requirements.txt
-      python manage.py collectstatic --noinput
-      python manage.py migrate --noinput
+      python manage.py collectstatic --noinput --settings=zorpido_config.setting.production
+      python manage.py migrate --noinput --settings=zorpido_config.setting.production
     startCommand: gunicorn zorpido_config.wsgi:application --workers 3 --bind 0.0.0.0:$PORT --log-file -
     envVars:
-      # Django configuration
+      # FIX: Changed 'settings' (plural) to 'setting' (singular) to match your folder
       - key: DJANGO_SETTINGS_MODULE
-        value: zorpido_config.settings.production
+        value: zorpido_config.setting.production
       
       - key: DEBUG
         value: "False"
       
-      # Django secret key (required - must be set in Render dashboard)
       - key: DJANGO_SECRET_KEY
-        sync: false
+        generateValue: true # Render will generate a safe key for you
       
-      # Allowed hosts - update with your domain
       - key: ALLOWED_HOSTS
-        value: localhost,127.0.0.1,*.onrender.com,your-domain.com
+        value: localhost,127.0.0.1,.onrender.com
       
-      # CSRF trusted origins - update with your domain
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://*.onrender.com,https://your-domain.com
+        value: https://*.onrender.com
       
-      # Database URL - automatically set by Render via the PostgreSQL service connection
+      # Database connection
       - key: DATABASE_URL
-        fromService:
-          type: pserv
+        fromDatabase:
           name: zorpido-postgres
           property: connectionString
       
-      # Security settings
+      # Cloudinary Credentials (matching your production.py code)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # Security
       - key: SECURE_SSL_REDIRECT
         value: "True"
-      
       - key: SESSION_COOKIE_SECURE
         value: "True"
-      
       - key: CSRF_COOKIE_SECURE
         value: "True"
-      
-      - key: SECURE_HSTS_SECONDS
-        value: "31536000"
-      
-      - key: SECURE_HSTS_INCLUDE_SUBDOMAINS
-        value: "True"
-      
-      - key: SECURE_HSTS_PRELOAD
-        value: "True"
-      
-      # Optional: Cloudinary for media uploads
-      # Uncomment and set if using Cloudinary for media storage
-      # - key: CLOUDINARY_URL
-      #   sync: false
-    
-    # Auto-deploy on git push to main branch
-    autoDeploy: true
